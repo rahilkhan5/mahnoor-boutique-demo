@@ -1,0 +1,844 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import Barcode from '../../components/Barcode.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { shop, COLLECTIONS, SIZES, sizeChart, products, delivery, reviews, STITCHING_FEE } from '../../data/store.js';
+import { rupees, typeLine, unitPrice } from '../../lib/store.js';
+
+export function getStaticPaths() {
+  return products.map((p) => ({ params: { slug: p.slug }, props: { product: p } }));
+}
+
+const { product: p } = Astro.props;
+const collection = COLLECTIONS[p.collection as keyof typeof COLLECTIONS];
+const soldOut = p.stock === 0;
+const stitched = p.type === 'stitched';
+const maxQty = Math.min(9, p.stock);
+const stockLine = soldOut ? 'Sold out. Back in about 2 weeks.' : p.stock < 4 ? `Only ${p.stock} left.` : 'In stock, ships from Lahore.';
+const singleQty = maxQty < 2;
+const more = products.filter((x) => x.collection === p.collection && x.slug !== p.slug).slice(0, 4);
+const said = reviews.filter((r) => r.slug === p.slug);
+const care =
+  p.collection === 'formal'
+    ? 'Dry clean only. Store folded in the cloth bag it comes in, away from perfume.'
+    : 'Wash by hand in cold water, inside out, before the first wear. Dry in the shade.';
+---
+
+<Base title={`${p.name}, ${rupees(unitPrice(p))}: ${shop.name}`} description={`${p.blurb} ${typeLine(p)}. Cash on delivery all over Pakistan. A demo store.`} image={`/photos/${p.slug}-1200.webp`} current={p.collection}>
+  <div class="page piece">
+    <a class="back" href={`/#${p.collection}`}><Icon name="arrow-left" />{collection.label}</a>
+
+    <figure class="piece-photo">
+      <img
+        src={`/photos/${p.slug}-1200.webp`}
+        srcset={`/photos/${p.slug}-600.webp 600w, /photos/${p.slug}-1200.webp 1200w`}
+        sizes="(min-width: 900px) 50vw, 100vw"
+        width="1200"
+        height="1800"
+        alt={p.alt}
+        fetchpriority="high"
+      />
+      {soldOut && <span class="stamp ink photo-stamp">Sold out</span>}
+      {!soldOut && p.salePrice && <span class="stamp photo-stamp">Sale</span>}
+    </figure>
+
+    <div class="slip" data-slip data-slug={p.slug} data-type={p.type} data-stock={p.stock}>
+      <h1>{p.name}</h1>
+      <div class="slip-id">
+        <Barcode code={p.code} height={28} />
+        <p class="slip-type">{typeLine(p)}<span aria-hidden="true"> · </span><span>{p.colour}</span></p>
+      </div>
+
+      <div class="slip-price">
+        <div class="price-row">
+          <span class="cod">
+            <span class="field-label">COD amount</span>
+            <span class="amount">
+              {p.salePrice && <s><span class="visually-hidden">Was </span>{rupees(p.price)}</s>}
+              {p.salePrice && <span class="visually-hidden">now </span>}
+              {rupees(unitPrice(p))}
+            </span>
+          </span>
+          <span class="stamp slip-added" data-added-stamp hidden aria-hidden="true">Added</span>
+        </div>
+        <p class="stock">
+          {stockLine}
+        </p>
+      </div>
+
+      <p class="blurb">{p.blurb}</p>
+
+      <form class="order" data-order novalidate>
+        {
+          !stitched && (
+            <label class="stitch">
+              <input type="checkbox" data-stitching disabled={soldOut} />
+              <span class="stitch-box" aria-hidden="true">
+                <Icon name="check" />
+              </span>
+              <span>
+                <strong>Stitch it to my size</strong>
+                <span class="stitch-note">
+                  Adds <span class="data">{rupees(STITCHING_FEE)}</span> and 7 working days.
+                </span>
+              </span>
+            </label>
+          )
+        }
+
+        <fieldset class="sizes" data-sizes hidden={!stitched} aria-describedby="size-error">
+          <legend class="field-label">Size</legend>
+          <div class="size-row">
+            {
+              SIZES.map((s) => (
+                <label class="size">
+                  <input type="radio" name="size" value={s} disabled={soldOut} />
+                  <span>{s}</span>
+                </label>
+              ))
+            }
+          </div>
+          <details class="chart">
+            <summary><Icon name="ruler" />Size chart, in inches</summary>
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Size</th>
+                  <th scope="col">Chest</th>
+                  <th scope="col">Length</th>
+                  <th scope="col">Sleeve</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  sizeChart.map((r) => (
+                    <tr>
+                      <th scope="row">{r.size}</th>
+                      <td class="data">{r.chest}</td>
+                      <td class="data">{r.length}</td>
+                      <td class="data">{r.sleeve}</td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+            <p>Measure a kurta that fits you well, lying flat, and pick the closest size. Exchange within 7 days if it does not fit.</p>
+          </details>
+          <p class="field-error" id="size-error" data-size-error hidden>Pick a size first.</p>
+        </fieldset>
+
+        <div class="buy-row">
+          <div class="qty">
+            <span class="field-label" id="qty-label">Quantity</span>
+            <div class="stepper" role="group" aria-labelledby="qty-label">
+              <button type="button" data-step="-1" aria-label="One less" disabled><Icon name="minus" /></button>
+              <output data-qty aria-live="polite">1</output>
+              <button type="button" data-step="1" aria-label="One more" disabled={singleQty}><Icon name="plus" /></button>
+            </div>
+          </div>
+          <button class="button pay add" type="submit" disabled={soldOut} data-add>
+            <Icon name="parcel" />
+            {soldOut ? 'Sold out' : 'Add to parcel'}
+          </button>
+        </div>
+        <p class="add-note" aria-live="polite" data-add-note></p>
+      </form>
+
+      <div class="eta">
+        <label class="field">
+          <span class="field-label">Deliver to</span>
+          <select data-city>
+            {delivery.map((d) => <option value={d.code}>{d.city}</option>)}
+          </select>
+        </label>
+        <p class="eta-line">
+          <Icon name="truck" />
+          <span data-eta>Lahore: 1 to 2 working days.</span>
+        </p>
+      </div>
+
+      <button class="ask" type="button" data-ask aria-expanded="false" aria-controls="ask-note">
+        <Icon name="chat" />
+        Ask about this piece on WhatsApp
+      </button>
+      <p class="ask-note" id="ask-note" data-ask-note hidden>
+        In a real store this opens WhatsApp with the boutique and the piece's code, {p.code}, already typed. This demo has no number, so nothing opens.
+      </p>
+    </div>
+
+    <section class="contents" aria-labelledby="contents-title">
+      <h2 id="contents-title">What is in the parcel</h2>
+      <dl class="contents-list">
+        <div>
+          <dt class="field-label">Pieces</dt>
+          <dd>
+            <ul>{p.pieces.map((x: string) => <li>{x}</li>)}</ul>
+          </dd>
+        </div>
+        <div>
+          <dt class="field-label">Fabric</dt>
+          <dd>{p.fabric}</dd>
+        </div>
+        <div>
+          <dt class="field-label">Colour</dt>
+          <dd>{p.colour}</dd>
+        </div>
+        <div>
+          <dt class="field-label">Care</dt>
+          <dd>{care}</dd>
+        </div>
+        <div>
+          <dt class="field-label">Exchange</dt>
+          <dd>Exchange for another size or piece within 7 days of delivery, unworn with the tag on. Stitched-to-size orders cannot be exchanged.</dd>
+        </div>
+      </dl>
+    </section>
+
+    {
+      said.length > 0 && (
+        <section class="said" aria-labelledby="said-title">
+          <h2 id="said-title">Signed for</h2>
+          {said.map((r) => (
+            <blockquote class="receipt">
+              <p class="receipt-stars" role="img" aria-label={`${r.stars} out of 5`}>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Icon name="star" class={i < r.stars ? 'on' : 'off'} />
+                ))}
+              </p>
+              <p>{r.text}</p>
+              <footer>{r.name}. An example review written for this demo.</footer>
+            </blockquote>
+          ))}
+        </section>
+      )
+    }
+  </div>
+
+  <section class="page more" aria-labelledby="more-title">
+    <h2 id="more-title">More {collection.label.toLowerCase()}</h2>
+    <ul class="more-grid">
+      {more.map((x, i) => <ProductCard product={x} index={i} />)}
+    </ul>
+  </section>
+</Base>
+
+<script>
+  import { addToParcel, arrival, qtyInParcel } from '../../lib/store.js';
+  import { delivery } from '../../data/store.js';
+
+  const slip = document.querySelector<HTMLElement>('[data-slip]')!;
+  const form = slip.querySelector<HTMLFormElement>('[data-order]')!;
+  const slug = slip.dataset.slug!;
+  const stitchedPiece = slip.dataset.type === 'stitched';
+  const stock = Number(slip.dataset.stock);
+  const stitching = slip.querySelector<HTMLInputElement>('[data-stitching]');
+  const sizes = slip.querySelector<HTMLElement>('[data-sizes]')!;
+  const sizeError = slip.querySelector<HTMLElement>('[data-size-error]')!;
+  const qtyOut = slip.querySelector<HTMLOutputElement>('[data-qty]')!;
+  const minus = slip.querySelector<HTMLButtonElement>('[data-step="-1"]')!;
+  const plus = slip.querySelector<HTMLButtonElement>('[data-step="1"]')!;
+  const note = slip.querySelector<HTMLElement>('[data-add-note]')!;
+  const stamp = slip.querySelector<HTMLElement>('[data-added-stamp]')!;
+  const city = slip.querySelector<HTMLSelectElement>('[data-city]')!;
+  const eta = slip.querySelector<HTMLElement>('[data-eta]')!;
+  const ask = slip.querySelector<HTMLButtonElement>('[data-ask]')!;
+  const askNote = slip.querySelector<HTMLElement>('[data-ask-note]')!;
+
+  let qty = 1;
+  const room = () => Math.max(0, Math.min(9, stock) - qtyInParcel(slug));
+
+  function paintQty() {
+    qtyOut.textContent = String(qty);
+    minus.disabled = qty <= 1;
+    plus.disabled = qty >= Math.max(1, room());
+  }
+
+  function needsSize() {
+    return stitchedPiece || Boolean(stitching?.checked);
+  }
+
+  function paintEta() {
+    const d = delivery.find((x) => x.code === city.value)!;
+    const extra = stitching?.checked ? 7 : 0;
+    eta.textContent = `${d.city}: ${d.days} working days${extra ? ' after stitching' : ''}, around ${arrival(d.days, extra)}.`;
+  }
+
+  slip.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((b) =>
+    b.addEventListener('click', () => {
+      qty = Math.min(Math.max(1, room()), Math.max(1, qty + Number(b.dataset.step)));
+      paintQty();
+    }),
+  );
+
+  stitching?.addEventListener('change', () => {
+    sizes.hidden = !stitching.checked;
+    if (!stitching.checked) {
+      sizeError.hidden = true;
+      sizes.querySelectorAll<HTMLInputElement>('input').forEach((i) => (i.checked = false));
+    }
+    paintEta();
+  });
+
+  sizes.addEventListener('change', () => (sizeError.hidden = true));
+  city.addEventListener('change', paintEta);
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const size = sizes.querySelector<HTMLInputElement>('input:checked')?.value ?? null;
+    if (needsSize() && !size) {
+      sizeError.hidden = false;
+      sizes.querySelector<HTMLInputElement>('input')!.focus();
+      note.textContent = '';
+      return;
+    }
+    if (room() < 1) {
+      note.textContent = `Your parcel already has all ${Math.min(9, stock)} of this piece that you can order.`;
+      return;
+    }
+    const n = Math.min(qty, room());
+    const ok = addToParcel({ slug, size, stitching: Boolean(stitching?.checked), qty: n });
+    if (!ok) {
+      note.textContent = 'This browser is not letting the site save your parcel. Try outside private mode.';
+      return;
+    }
+    stamp.hidden = true;
+    void stamp.offsetWidth;
+    stamp.hidden = false;
+    note.innerHTML = '';
+    note.append(`Added ${n} to your parcel${size ? `, size ${size}` : ''}. `);
+    const link = document.createElement('a');
+    link.href = '/parcel/';
+    link.textContent = 'Go to parcel';
+    note.append(link);
+    qty = 1;
+    paintQty();
+  });
+
+  ask.addEventListener('click', () => {
+    askNote.hidden = !askNote.hidden;
+    ask.setAttribute('aria-expanded', String(!askNote.hidden));
+  });
+
+  paintQty();
+  paintEta();
+</script>
+
+<style>
+  .piece {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      'back back'
+      'photo slip'
+      'photo contents'
+      'photo said';
+    grid-template-rows: auto auto auto 1fr;
+    gap: var(--space-5) var(--space-8);
+    padding-block: var(--space-5) var(--space-8);
+  }
+
+  .back {
+    grid-area: back;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    justify-self: start;
+    min-height: 44px;
+    font-family: var(--font-form);
+    font-weight: 800;
+    font-size: var(--step-1);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .back :global(.icon) {
+    width: 22px;
+  }
+
+  .back:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+
+  .piece-photo {
+    grid-area: photo;
+    position: sticky;
+    top: var(--space-4);
+    align-self: start;
+    margin: 0;
+  }
+
+  .piece-photo img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    height: auto;
+    max-height: calc(100svh - var(--space-6));
+    object-fit: cover;
+    background: var(--slip-deep);
+  }
+
+  .photo-stamp {
+    position: absolute;
+    top: var(--space-5);
+    right: var(--space-4);
+    background: rgb(255 255 255 / 0.88);
+    font-size: var(--step-2);
+    mix-blend-mode: normal;
+  }
+
+  .slip {
+    grid-area: slip;
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+  }
+
+  .slip h1 {
+    font-size: var(--step-4);
+    font-weight: 900;
+    line-height: 0.88;
+  }
+
+  .slip-id {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-3) var(--space-5);
+  }
+
+  .slip-id :global(.barcode) {
+    width: 170px;
+  }
+
+  .slip-type {
+    font-weight: 500;
+    color: var(--ink-soft);
+  }
+
+  .slip-price {
+    position: relative;
+    display: grid;
+    justify-items: start;
+    gap: var(--space-2);
+  }
+
+  .slip-price .amount {
+    font-size: var(--step-2);
+  }
+
+  .stock {
+    font-weight: 600;
+  }
+
+  .price-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-5);
+  }
+
+  .slip-added {
+    color: var(--pay);
+    font-size: var(--step-3);
+    transform: rotate(-12deg);
+    animation: stamp-in 380ms var(--ease-out) both;
+    pointer-events: none;
+  }
+
+  @keyframes stamp-in {
+    from {
+      opacity: 0;
+      transform: rotate(-12deg) scale(1.6);
+    }
+    to {
+      opacity: 0.9;
+      transform: rotate(-12deg) scale(1);
+    }
+  }
+
+  .blurb {
+    max-width: 46ch;
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+
+  .order {
+    display: grid;
+    gap: var(--space-5);
+    padding: var(--space-5);
+    background: var(--white);
+    border: var(--rule);
+  }
+
+  .stitch {
+    position: relative;
+    display: flex;
+    align-items: start;
+    gap: var(--space-3);
+    cursor: pointer;
+  }
+
+  .stitch input {
+    position: absolute;
+    opacity: 0;
+    width: 28px;
+    height: 28px;
+    margin: 0;
+  }
+
+  .stitch-box {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--form);
+    background: var(--white);
+    color: transparent;
+    transition: background-color 120ms ease;
+  }
+
+  .stitch-box :global(.icon) {
+    width: 20px;
+    stroke-width: 2.5;
+  }
+
+  .stitch input:checked + .stitch-box {
+    background: var(--form);
+    color: var(--white);
+  }
+
+  .stitch input:focus-visible + .stitch-box {
+    outline: 3px solid var(--form);
+    outline-offset: 3px;
+  }
+
+  .stitch-note {
+    display: block;
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .sizes {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+
+  .size-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .size {
+    position: relative;
+  }
+
+  .size input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .size span {
+    display: grid;
+    place-items: center;
+    min-width: 54px;
+    min-height: 50px;
+    padding: 0 var(--space-3);
+    border: 1.5px solid var(--form);
+    font-family: var(--font-data);
+    font-weight: 600;
+    color: var(--form);
+    transition: transform 120ms var(--ease-out);
+  }
+
+  .size input:checked + span {
+    background: var(--form);
+    color: var(--white);
+  }
+
+  .size input:active + span {
+    transform: scale(0.94);
+  }
+
+  .size input:focus-visible + span {
+    outline: 3px solid var(--form);
+    outline-offset: 3px;
+  }
+
+  .size input:disabled + span {
+    border-color: var(--form-line);
+    color: var(--form-line);
+  }
+
+  .chart summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    color: var(--form);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .chart summary :global(.icon) {
+    width: 20px;
+  }
+
+  .chart table {
+    width: 100%;
+    margin-block: var(--space-2) var(--space-3);
+    border-collapse: collapse;
+    font-size: var(--step--1);
+  }
+
+  .chart th,
+  .chart td {
+    padding: var(--space-2);
+    border-bottom: 1px solid var(--form-line);
+    text-align: left;
+  }
+
+  .chart thead th {
+    font-family: var(--font-form);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--form);
+  }
+
+  .chart p {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .buy-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-4);
+  }
+
+  .qty {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .add {
+    flex: 1 1 14rem;
+  }
+
+  .add-note {
+    min-height: 1.5em;
+    font-weight: 600;
+  }
+
+  .add-note:empty {
+    display: none;
+  }
+
+  .eta {
+    display: grid;
+    grid-template-columns: minmax(0, 15rem) 1fr;
+    align-items: end;
+    gap: var(--space-3) var(--space-4);
+  }
+
+  .eta-line {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 50px;
+    font-weight: 500;
+  }
+
+  .eta-line :global(.icon) {
+    flex: none;
+    width: 24px;
+    color: var(--form);
+  }
+
+  .ask {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    justify-self: start;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.2em;
+  }
+
+  .ask :global(.icon) {
+    width: 22px;
+    color: var(--form);
+  }
+
+  .ask-note {
+    max-width: 46ch;
+    padding: var(--space-3) var(--space-4);
+    background: var(--copy-yellow);
+    border: 1px solid var(--form-line);
+    font-size: var(--step--1);
+  }
+
+  .contents {
+    grid-area: contents;
+    display: grid;
+    gap: var(--space-4);
+    padding-top: var(--space-6);
+  }
+
+  .contents h2,
+  .said h2 {
+    font-size: var(--step-2);
+  }
+
+  .contents-list {
+    margin: 0;
+    border-top: var(--rule);
+  }
+
+  .contents-list > div {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: var(--space-4);
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--form-line);
+  }
+
+  .contents-list dt {
+    padding-top: 3px;
+  }
+
+  .contents-list dd {
+    margin: 0;
+  }
+
+  .contents-list ul {
+    margin: 0;
+    padding-left: 1.1em;
+  }
+
+  .said {
+    grid-area: said;
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+    padding-top: var(--space-5);
+  }
+
+  .receipt {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: var(--space-4);
+    background: var(--white);
+    border: 1px solid var(--form-line);
+    border-top: 6px dashed var(--form-line);
+  }
+
+  .receipt-stars {
+    display: flex;
+    gap: 2px;
+  }
+
+  .receipt-stars :global(.icon) {
+    width: 18px;
+  }
+
+  .receipt-stars :global(.on) {
+    fill: var(--ink);
+    stroke: var(--ink);
+  }
+
+  .receipt-stars :global(.off) {
+    color: var(--form-line);
+  }
+
+  .receipt footer {
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+
+  .more {
+    display: grid;
+    gap: var(--space-5);
+    padding-top: var(--space-6);
+    border-top: var(--rule);
+  }
+
+  .more-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-6) var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (max-width: 900px) {
+    .piece {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        'back'
+        'photo'
+        'slip'
+        'contents'
+        'said';
+      grid-template-rows: none;
+      gap: var(--space-5);
+    }
+
+    .piece-photo {
+      position: relative;
+      top: 0;
+    }
+
+    .piece-photo img {
+      max-height: none;
+      aspect-ratio: 4 / 5;
+    }
+
+    .more-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-6) var(--space-3);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .order {
+      padding: var(--space-4);
+    }
+
+    .add {
+      flex-basis: 100%;
+    }
+
+    .eta {
+      grid-template-columns: 1fr;
+    }
+
+    .eta-line {
+      min-height: 0;
+    }
+
+    .contents-list > div {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
+    }
+  }
+</style>

@@ -1,0 +1,984 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Barcode from '../components/Barcode.astro';
+import { shop, delivery, PAYMENTS } from '../data/store.js';
+
+const payIcons = { cod: 'cash', jazzcash: 'phone', easypaisa: 'phone', card: 'card' } as const;
+const payDemo: Record<string, string> = {
+  jazzcash: 'In a real store, Place order would take you to JazzCash to approve the payment with your own PIN. This demo skips that step and charges nothing.',
+  easypaisa: 'In a real store, Place order would take you to Easypaisa to approve the payment in your account. This demo skips that step and charges nothing.',
+  card: 'In a real store, Place order would take you to the bank’s secure card page. This demo has no card page and never asks for card details.',
+};
+---
+
+<Base title={`Your parcel: ${shop.name}`} description="Your parcel and checkout. Cash on delivery, JazzCash, Easypaisa or card. A demo store: nothing is charged." current="parcel">
+  <div class="page parcel" data-parcel-page>
+    <div class="parcel-head">
+      <h1>Your parcel</h1>
+      <p class="parcel-sub" data-parcel-sub>Saved in this browser only.</p>
+    </div>
+
+    <div class="empty" data-empty hidden>
+      <p class="empty-title">Nothing in your parcel yet.</p>
+      <p>Pick a piece, choose a size or stitching, and press Add to parcel. It stays here until you order.</p>
+      <div class="empty-actions">
+        <a class="button" href="/#lawn">Start with Summer Lawn</a>
+        <a class="button" href="/track/"><Icon name="track" />Track an order</a>
+      </div>
+    </div>
+
+    <form class="checkout" data-checkout novalidate hidden>
+      <div class="main">
+        <section aria-labelledby="lines-title">
+          <h2 id="lines-title" class="block-title">In the parcel</h2>
+          <ul class="lines" data-lines></ul>
+        </section>
+
+        <fieldset class="block" data-deliver>
+          <legend class="block-title">Deliver to</legend>
+          <div class="grid-2">
+            <label class="field">
+              <span class="field-label">Full name</span>
+              <input name="name" autocomplete="name" required aria-describedby="name-error" />
+              <span class="field-error" id="name-error" hidden></span>
+            </label>
+            <label class="field">
+              <span class="field-label">Mobile number</span>
+              <input name="mobile" type="tel" inputmode="tel" autocomplete="tel" placeholder="03XX XXXXXXX" required aria-describedby="mobile-hint mobile-error" />
+              <span class="field-hint" id="mobile-hint">The rider calls this number before delivery.</span>
+              <span class="field-error" id="mobile-error" hidden></span>
+            </label>
+          </div>
+          <label class="field">
+            <span class="field-label">City</span>
+            <select name="city" required aria-describedby="city-error" data-city>
+              <option value="">Choose your city</option>
+              {delivery.map((d) => <option value={d.code}>{d.city}</option>)}
+            </select>
+            <span class="field-error" id="city-error" hidden></span>
+          </label>
+          <label class="field">
+            <span class="field-label">Address</span>
+            <textarea name="address" autocomplete="street-address" rows="3" required aria-describedby="address-error" placeholder="House, street, area"></textarea>
+            <span class="field-error" id="address-error" hidden></span>
+          </label>
+          <label class="field">
+            <span class="field-label">Note for the boutique <span class="optional">(optional)</span></span>
+            <input name="note" maxlength="140" placeholder="For example: please call after 5 pm" />
+          </label>
+        </fieldset>
+
+        <fieldset class="block pays">
+          <legend class="block-title">How you will pay</legend>
+          {
+            Object.entries(PAYMENTS).map(([key, p], i) => (
+              <div class="pay-row">
+                <label class="pay-option">
+                  <input type="radio" name="pay" value={key} checked={i === 0} />
+                  <span class="pay-dot" aria-hidden="true" />
+                  <Icon name={payIcons[key as keyof typeof payIcons]} />
+                  <span class="pay-words">
+                    <strong>{p.label}</strong>
+                    <span>{p.note}</span>
+                  </span>
+                </label>
+                {key !== 'cod' && (
+                  <p class="pay-demo" data-pay-demo={key} hidden>
+                    {payDemo[key]}
+                  </p>
+                )}
+              </div>
+            ))
+          }
+        </fieldset>
+      </div>
+
+      <aside class="summary" aria-labelledby="summary-title">
+        <div class="copy">
+          <h2 id="summary-title" class="block-title">Consignment summary</h2>
+          <dl class="sums">
+            <div>
+              <dt>Pieces</dt>
+              <dd class="data" data-sum-items></dd>
+            </div>
+            <div data-sum-stitch-row hidden>
+              <dt>Stitching</dt>
+              <dd class="data" data-sum-stitch></dd>
+            </div>
+            <div>
+              <dt>Delivery</dt>
+              <dd class="data" data-sum-delivery></dd>
+            </div>
+          </dl>
+          <p class="free-note" data-free-note></p>
+          <div class="total">
+            <span class="cod">
+              <span class="field-label" data-total-label>COD amount</span>
+              <span class="amount" data-sum-total></span>
+            </span>
+          </div>
+          <p class="eta" data-eta>Choose your city to see the delivery days.</p>
+          <button class="button pay place" type="submit" data-place>
+            <Icon name="parcel" />
+            <span data-place-text>Place order</span>
+            <span class="place-amount data" data-place-amount></span>
+          </button>
+          <p class="place-status" role="status" data-place-status></p>
+          <p class="demo-note">Demo store. Placing an order charges nothing and sends nothing. The order is kept in this browser so you can track it.</p>
+        </div>
+      </aside>
+    </form>
+
+    <section class="note" data-note hidden aria-labelledby="note-title" tabindex="-1">
+      <div class="note-paper">
+        <p class="note-band">
+          <span>Consignment note</span>
+          <span class="data" data-note-date></span>
+        </p>
+        <h2 id="note-title" class="note-title">Order placed</h2>
+        <div class="note-no">
+          <span class="field-label">Order number</span>
+          <span class="data" data-note-no></span>
+          <span class="note-barcode" data-note-barcode></span>
+        </div>
+        <dl class="note-fields">
+          <div>
+            <dt class="field-label">Deliver to</dt>
+            <dd data-note-to></dd>
+          </div>
+          <div>
+            <dt class="field-label">Payment</dt>
+            <dd data-note-pay></dd>
+          </div>
+          <div class="wide">
+            <dt class="field-label">Contents</dt>
+            <dd>
+              <ul class="note-lines" data-note-lines></ul>
+            </dd>
+          </div>
+          <div>
+            <dt class="field-label">Expected</dt>
+            <dd data-note-eta></dd>
+          </div>
+          <div>
+            <dt class="field-label">Amount</dt>
+            <dd>
+              <span class="cod">
+                <span class="field-label" data-note-amount-label>COD amount</span>
+                <span class="amount" data-note-total></span>
+              </span>
+            </dd>
+          </div>
+        </dl>
+        <p class="note-demo">Nothing was charged and no order went to a boutique. This is a demo store.</p>
+        <span class="stamp note-stamp" aria-hidden="true">Booked</span>
+      </div>
+      <div class="note-actions">
+        <a class="button" href="/track/" data-note-track><Icon name="track" />Track this order</a>
+        <a class="button" href="/">Keep shopping</a>
+      </div>
+    </section>
+  </div>
+
+  <template data-line-template>
+    <li class="line">
+      <a class="line-photo" data-line-link data-line-photo></a>
+      <div class="line-words">
+        <span class="line-code data" data-line-code></span>
+        <a class="line-name" data-line-link data-line-name></a>
+        <span class="line-what" data-line-what></span>
+        <span class="line-unit data" data-line-unit></span>
+      </div>
+      <div class="line-qty">
+        <div class="stepper" role="group" data-line-stepper>
+          <button type="button" data-line-step="-1"><Icon name="minus" /></button>
+          <output data-line-qty></output>
+          <button type="button" data-line-step="1"><Icon name="plus" /></button>
+        </div>
+        <button class="line-remove" type="button" data-line-remove><Icon name="close" />Remove</button>
+      </div>
+      <span class="line-total data" data-line-total></span>
+    </li>
+  </template>
+
+  <template data-barcode-template>
+    <Barcode code="MB-000000" height={30} />
+  </template>
+
+</Base>
+
+<script>
+  import { arrival, barcode, readStore, writeStore, rupees, unitPrice, PARCEL_KEY, ORDERS_KEY } from '../lib/store.js';
+  import { products, delivery, PAYMENTS, FREE_DELIVERY_FROM, DELIVERY_FEE, STITCHING_FEE } from '../data/store.js';
+
+  type Line = { slug: string; size: string | null; stitching: boolean; qty: number };
+  const bySlug = Object.fromEntries(products.map((p) => [p.slug, p]));
+
+  const page = document.querySelector<HTMLElement>('[data-parcel-page]')!;
+  const sub = page.querySelector<HTMLElement>('[data-parcel-sub]')!;
+  const empty = page.querySelector<HTMLElement>('[data-empty]')!;
+  const form = page.querySelector<HTMLFormElement>('[data-checkout]')!;
+  const list = page.querySelector<HTMLUListElement>('[data-lines]')!;
+  const tpl = document.querySelector<HTMLTemplateElement>('[data-line-template]')!;
+  const city = form.querySelector<HTMLSelectElement>('[data-city]')!;
+  const placeBtn = form.querySelector<HTMLButtonElement>('[data-place]')!;
+  const placeText = form.querySelector<HTMLElement>('[data-place-text]')!;
+  const status = form.querySelector<HTMLElement>('[data-place-status]')!;
+  const noteSection = page.querySelector<HTMLElement>('[data-note]')!;
+  const $ = <T extends HTMLElement = HTMLElement>(sel: string, root: ParentNode = form) => root.querySelector<T>(sel)!;
+
+  // Drop lines for pieces that no longer exist or are sold out.
+  let lines: Line[] = (readStore(PARCEL_KEY, []) as Line[]).filter((l) => bySlug[l.slug] && bySlug[l.slug].stock > 0 && l.qty > 0);
+  const save = () => {
+    writeStore(PARCEL_KEY, lines);
+    window.dispatchEvent(new Event('mb:parcel'));
+  };
+
+  function totals() {
+    const items = lines.reduce((n, l) => n + unitPrice(bySlug[l.slug]) * l.qty, 0);
+    const stitch = lines.reduce((n, l) => n + (l.stitching ? STITCHING_FEE * l.qty : 0), 0);
+    const goods = items + stitch;
+    const fee = goods >= FREE_DELIVERY_FROM ? 0 : DELIVERY_FEE;
+    return { items, stitch, fee, total: goods + fee, goods };
+  }
+
+  function what(l: Line) {
+    const p = bySlug[l.slug];
+    if (p.type === 'stitched') return `Stitched, size ${l.size}`;
+    if (l.stitching) return `Stitched to size ${l.size}`;
+    return `${p.pieces.length}-piece unstitched`;
+  }
+
+  function etaText() {
+    const d = delivery.find((x) => x.code === city.value);
+    if (!d) return 'Choose your city to see the delivery days.';
+    const extra = lines.some((l) => l.stitching) ? 7 : 0;
+    return `${d.city}: around ${arrival(d.days, extra)}${extra ? ', stitching included' : ''}.`;
+  }
+
+  function paintSums() {
+    const t = totals();
+    const count = lines.reduce((n, l) => n + l.qty, 0);
+    sub.textContent = `${count} ${count === 1 ? 'piece' : 'pieces'}, saved in this browser only.`;
+    $('[data-sum-items]').textContent = rupees(t.items);
+    $('[data-sum-stitch-row]').hidden = t.stitch === 0;
+    $('[data-sum-stitch]').textContent = rupees(t.stitch);
+    $('[data-sum-delivery]').textContent = t.fee ? rupees(t.fee) : 'Free';
+    $('[data-free-note]').textContent = t.fee ? `Add ${rupees(FREE_DELIVERY_FROM - t.goods)} more for free delivery.` : `Free delivery on orders over ${rupees(FREE_DELIVERY_FROM)}.`;
+    $('[data-sum-total]').textContent = rupees(t.total);
+    const pay = (form.elements.namedItem('pay') as RadioNodeList).value;
+    $('[data-total-label]').textContent = pay === 'cod' ? 'COD amount' : 'Total';
+    placeText.textContent = 'Place order';
+    $('[data-place-amount]').textContent = rupees(t.total);
+    $('[data-eta]').textContent = etaText();
+  }
+
+  function paintLines() {
+    const has = lines.length > 0;
+    empty.hidden = has;
+    form.hidden = !has;
+    if (!has) {
+      sub.textContent = 'Saved in this browser only.';
+      return;
+    }
+    list.replaceChildren(
+      ...lines.map((l, i) => {
+        const p = bySlug[l.slug];
+        const max = Math.min(9, p.stock);
+        const li = tpl.content.firstElementChild!.cloneNode(true) as HTMLElement;
+        li.querySelectorAll<HTMLAnchorElement>('[data-line-link]').forEach((a) => (a.href = `/p/${p.slug}/`));
+        li.querySelector<HTMLAnchorElement>('[data-line-link]')!.tabIndex = -1;
+        li.querySelector<HTMLAnchorElement>('[data-line-link]')!.setAttribute('aria-hidden', 'true');
+        const img = new Image(600, 900);
+        img.alt = '';
+        img.decoding = 'async';
+        img.src = `/photos/${p.slug}-600.webp`;
+        li.querySelector('[data-line-photo]')!.append(img);
+        li.querySelector('[data-line-code]')!.textContent = p.code;
+        li.querySelector('[data-line-name]')!.textContent = p.name;
+        li.querySelector('[data-line-what]')!.textContent = what(l);
+        li.querySelector('[data-line-unit]')!.textContent = `${rupees(unitPrice(p))}${l.stitching ? ` + ${rupees(STITCHING_FEE)} stitching` : ''} each`;
+        li.querySelector('[data-line-qty]')!.textContent = String(l.qty);
+        li.querySelector('[data-line-total]')!.textContent = rupees((unitPrice(p) + (l.stitching ? STITCHING_FEE : 0)) * l.qty);
+        li.querySelector('[data-line-stepper]')!.setAttribute('aria-label', `Quantity of ${p.name}`);
+        const [down, up] = li.querySelectorAll<HTMLButtonElement>('[data-line-step]');
+        down.setAttribute('aria-label', `One less ${p.name}`);
+        up.setAttribute('aria-label', `One more ${p.name}`);
+        down.disabled = l.qty <= 1;
+        const sameSlug = lines.reduce((n, x) => (x.slug === l.slug ? n + x.qty : n), 0);
+        up.disabled = sameSlug >= max;
+        down.addEventListener('click', () => step(i, -1));
+        up.addEventListener('click', () => step(i, 1));
+        const remove = li.querySelector<HTMLButtonElement>('[data-line-remove]')!;
+        remove.setAttribute('aria-label', `Remove ${p.name} from the parcel`);
+        remove.addEventListener('click', () => {
+          lines.splice(i, 1);
+          save();
+          paintLines();
+          const next = list.querySelectorAll<HTMLButtonElement>('[data-line-remove]')[Math.min(i, lines.length - 1)];
+          (next ?? document.querySelector<HTMLElement>('[data-empty] a'))?.focus();
+        });
+        return li;
+      }),
+    );
+    paintSums();
+  }
+
+  function step(i: number, by: number) {
+    lines[i].qty = Math.max(1, lines[i].qty + by);
+    save();
+    paintLines();
+    const btn = list.children[i]?.querySelector<HTMLButtonElement>(`[data-line-step="${by}"]`);
+    if (btn && !btn.disabled) btn.focus();
+    else list.children[i]?.querySelector<HTMLButtonElement>(`[data-line-step="${-by}"]`)?.focus();
+  }
+
+  // Payment: show the plain demo note for anything that is not cash on delivery.
+  form.querySelectorAll<HTMLInputElement>('input[name="pay"]').forEach((r) =>
+    r.addEventListener('change', () => {
+      form.querySelectorAll<HTMLElement>('[data-pay-demo]').forEach((p) => (p.hidden = p.dataset.payDemo !== r.value));
+      paintSums();
+    }),
+  );
+  city.addEventListener('change', paintSums);
+
+  // Validation, field by field, in plain words.
+  const checks: Record<string, (v: string) => string> = {
+    name: (v) => (v.trim().length >= 2 ? '' : 'Write the name the parcel should go to.'),
+    mobile: (v) => (/^03\d{2}[\s-]?\d{7}$/.test(v.trim()) ? '' : 'Write a Pakistani mobile number like 03XX XXXXXXX, 11 digits.'),
+    city: (v) => (v ? '' : 'Choose a city so we know the delivery days.'),
+    address: (v) => (v.trim().length >= 10 ? '' : 'Write the full address: house, street and area.'),
+  };
+
+  function check(name: string) {
+    const el = form.elements.namedItem(name) as HTMLInputElement;
+    const msg = checks[name](el.value);
+    const err = form.querySelector<HTMLElement>(`#${name}-error`)!;
+    err.textContent = msg;
+    err.hidden = !msg;
+    if (msg) el.setAttribute('aria-invalid', 'true');
+    else el.removeAttribute('aria-invalid');
+    return !msg;
+  }
+
+  Object.keys(checks).forEach((name) => {
+    const el = form.elements.namedItem(name) as HTMLInputElement;
+    el.addEventListener('blur', () => el.value && check(name));
+    el.addEventListener('change', () => {
+      if (!el.getAttribute('aria-invalid')) return;
+      check(name);
+      if (!form.querySelector('.field-error:not([hidden])')) status.textContent = '';
+    });
+    el.addEventListener('input', () => {
+      if (!el.getAttribute('aria-invalid')) return;
+      check(name);
+      if (!form.querySelector('.field-error:not([hidden])')) status.textContent = '';
+    });
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (placeBtn.disabled) return;
+    const bad = Object.keys(checks).filter((n) => !check(n));
+    if (bad.length) {
+      status.textContent = bad.length === 1 ? 'One field needs fixing, marked in red.' : `${bad.length} fields need fixing, marked in red.`;
+      (form.elements.namedItem(bad[0]) as HTMLElement).focus();
+      return;
+    }
+    status.textContent = '';
+    placeBtn.disabled = true;
+    placeText.textContent = 'Booking your parcel…';
+    $('[data-place-amount]').textContent = '';
+    window.setTimeout(place, 900);
+  });
+
+  function place() {
+    const t = totals();
+    const data = new FormData(form);
+    const pay = String(data.get('pay'));
+    const d = delivery.find((x) => x.code === data.get('city'))!;
+    const extra = lines.some((l) => l.stitching) ? 7 : 0;
+    const no = `MB-${String(Math.floor(100000 + Math.random() * 900000))}`;
+    const now = new Date();
+    const order = {
+      no,
+      placedAt: now.toISOString(),
+      steps: [now.toISOString()],
+      name: String(data.get('name')).trim(),
+      city: d.code,
+      cityName: d.city,
+      pay,
+      eta: arrival(d.days, extra, now),
+      total: t.total,
+      lines: lines.map((l) => ({ name: bySlug[l.slug].name, code: bySlug[l.slug].code, qty: l.qty, what: what(l) })),
+    };
+    const orders = readStore(ORDERS_KEY, []);
+    orders.unshift(order);
+    writeStore(ORDERS_KEY, orders.slice(0, 20));
+    lines = [];
+    save();
+
+    const n = noteSection;
+    $('[data-note-date]', n).textContent = now.toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    $('[data-note-no]', n).textContent = no;
+    const bc = document.querySelector<HTMLTemplateElement>('[data-barcode-template]')!.content.firstElementChild!.cloneNode(true) as HTMLElement;
+    const { bars, width } = barcode(no);
+    const svg = bc.querySelector('svg')!;
+    svg.setAttribute('viewBox', `0 0 ${width} 10`);
+    svg.replaceChildren(
+      ...bars.map((b) => {
+        const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        r.setAttribute('x', String(b.x));
+        r.setAttribute('y', '0');
+        r.setAttribute('width', String(b.w));
+        r.setAttribute('height', '10');
+        return r;
+      }),
+    );
+    bc.querySelector('.barcode-code')!.remove();
+    $('[data-note-barcode]', n).replaceChildren(bc);
+    $('[data-note-to]', n).textContent = `${order.name}, ${d.city}`;
+    $('[data-note-pay]', n).textContent = pay === 'cod' ? 'Cash on delivery, pay the rider' : `${PAYMENTS[pay as keyof typeof PAYMENTS].label} (demo, nothing charged)`;
+    $('[data-note-lines]', n).replaceChildren(
+      ...order.lines.map((l) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="data"></span> <span></span>`;
+        li.children[0].textContent = `${l.qty} ×`;
+        li.children[1].textContent = `${l.name}, ${l.what.charAt(0).toLowerCase()}${l.what.slice(1)}`;
+        return li;
+      }),
+    );
+    $('[data-note-eta]', n).textContent = order.eta;
+    $('[data-note-amount-label]', n).textContent = pay === 'cod' ? 'COD amount' : 'Total';
+    $('[data-note-total]', n).textContent = rupees(order.total);
+    $<HTMLAnchorElement>('[data-note-track]', n).href = `/track/#${no}`;
+
+    form.hidden = true;
+    sub.textContent = 'Booked. Your parcel is empty again.';
+    n.hidden = false;
+    n.focus();
+    n.scrollIntoView({ block: 'start' });
+  }
+
+  paintLines();
+  window.addEventListener('storage', (e) => {
+    if (e.key === PARCEL_KEY && noteSection.hidden) {
+      lines = (readStore(PARCEL_KEY, []) as Line[]).filter((l) => bySlug[l.slug] && bySlug[l.slug].stock > 0);
+      paintLines();
+    }
+  });
+</script>
+
+<style>
+  .parcel {
+    padding-block: var(--space-6) var(--space-8);
+  }
+
+  .parcel-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-5);
+    padding-bottom: var(--space-4);
+    border-bottom: 4px double var(--form);
+  }
+
+  .parcel-head h1 {
+    font-size: var(--step-4);
+    font-weight: 900;
+  }
+
+  .parcel-sub {
+    color: var(--ink-soft);
+  }
+
+  .empty {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+    max-width: 40rem;
+    padding-block: var(--space-7);
+  }
+
+  .empty-title {
+    font-family: var(--font-form);
+    font-weight: 850;
+    font-size: var(--step-3);
+    line-height: 0.95;
+  }
+
+  .empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .checkout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+    gap: var(--space-7);
+    align-items: start;
+    padding-top: var(--space-6);
+  }
+
+  .main {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .block-title {
+    padding: 0;
+    font-family: var(--font-form);
+    font-weight: 850;
+    font-size: var(--step-2);
+    line-height: 1;
+  }
+
+  .block {
+    display: grid;
+    gap: var(--space-4);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .block > legend {
+    float: left;
+    width: 100%;
+    margin-bottom: var(--space-4);
+  }
+
+  .block > legend + * {
+    clear: both;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  .optional {
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    color: var(--ink-soft);
+  }
+
+  .lines {
+    display: grid;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: var(--rule);
+  }
+
+  .line {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr) auto auto;
+    grid-template-areas: 'photo words qty total';
+    align-items: center;
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+    border-bottom: 1px solid var(--form-line);
+  }
+
+  .line-photo {
+    grid-area: photo;
+  }
+
+  /* The photo is added by the script, so it sits outside the scope. */
+  .line-photo :global(img) {
+    width: 84px;
+    height: auto;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    background: var(--slip-deep);
+  }
+
+  .line-words {
+    grid-area: words;
+    display: grid;
+    gap: 2px;
+  }
+
+  .line-code {
+    font-size: var(--step--2);
+    color: var(--form);
+  }
+
+  .line-name {
+    font-family: var(--font-form);
+    font-weight: 800;
+    font-size: var(--step-1);
+    line-height: 1.05;
+    text-decoration: none;
+  }
+
+  .line-name:hover {
+    text-decoration: underline;
+  }
+
+  .line-what,
+  .line-unit {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .line-qty {
+    grid-area: qty;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-1);
+  }
+
+  .line-remove {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 40px;
+    padding: 0 var(--space-2);
+    border: 0;
+    background: none;
+    font-size: var(--step--1);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .line-remove :global(svg) {
+    width: 16px;
+  }
+
+  .line-total {
+    grid-area: total;
+    min-width: 6.5rem;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .pays {
+    gap: 0;
+  }
+
+  .pay-row {
+    border-top: 1px solid var(--form-line);
+  }
+
+  .pay-row:last-child {
+    border-bottom: 1px solid var(--form-line);
+  }
+
+  .pay-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding-block: var(--space-4);
+    cursor: pointer;
+  }
+
+  .pay-option input {
+    position: absolute;
+    opacity: 0;
+    width: 24px;
+    height: 24px;
+    margin: 0;
+  }
+
+  .pay-dot {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--form);
+    border-radius: 50%;
+    background: var(--white);
+  }
+
+  .pay-dot::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--form);
+    transform: scale(0);
+    transition: transform 160ms var(--ease-out);
+  }
+
+  .pay-option input:checked + .pay-dot::after {
+    transform: scale(1);
+  }
+
+  .pay-option input:focus-visible + .pay-dot {
+    outline: 3px solid var(--form);
+    outline-offset: 3px;
+  }
+
+  .pay-option > :global(.icon) {
+    flex: none;
+    width: 26px;
+    color: var(--form);
+  }
+
+  .pay-words {
+    display: grid;
+  }
+
+  .pay-words span {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .pay-demo {
+    margin: 0 0 var(--space-4) calc(24px + var(--space-3));
+    padding: var(--space-3) var(--space-4);
+    background: var(--copy-pink);
+    border: 1px solid var(--form-line);
+    font-size: var(--step--1);
+  }
+
+  .summary {
+    position: sticky;
+    top: var(--space-4);
+  }
+
+  .copy {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: var(--copy-yellow);
+    border: var(--rule);
+    box-shadow: var(--lift);
+  }
+
+  .sums {
+    display: grid;
+    margin: 0;
+  }
+
+  .sums > div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-block: var(--space-2);
+    border-bottom: 1px dashed rgb(31 63 191 / 0.4);
+  }
+
+  .sums dd {
+    margin: 0;
+  }
+
+  .free-note,
+  .eta,
+  .demo-note {
+    font-size: var(--step--1);
+  }
+
+  .demo-note {
+    color: var(--ink-soft);
+  }
+
+  .total .cod {
+    display: grid;
+    background: var(--white);
+  }
+
+  .total .amount {
+    font-size: var(--step-2);
+  }
+
+  .place {
+    width: 100%;
+    padding-inline: var(--space-4);
+  }
+
+  .place-amount {
+    font-size: var(--step-0);
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .place-status {
+    font-weight: 600;
+    color: var(--error);
+  }
+
+  .place-status:empty {
+    display: none;
+  }
+
+  .note {
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+    padding-top: var(--space-6);
+    outline: none;
+  }
+
+  .note-paper {
+    position: relative;
+    display: grid;
+    gap: var(--space-4);
+    width: min(720px, 100%);
+    padding: 0 var(--space-5) var(--space-5);
+    background: var(--copy-pink);
+    border: var(--rule);
+    box-shadow: var(--lift);
+  }
+
+  .note-band {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin: 0 calc(var(--space-5) * -1);
+    padding: var(--space-2) var(--space-5);
+    background: var(--form);
+    color: var(--white);
+    font-family: var(--font-form);
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .note-band .data {
+    font-size: var(--step--1);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .note-title {
+    font-size: var(--step-3);
+    font-weight: 900;
+  }
+
+  .note-no {
+    display: grid;
+    gap: var(--space-1);
+    justify-items: start;
+  }
+
+  .note-no > .data {
+    font-size: var(--step-2);
+    font-weight: 600;
+  }
+
+  .note-barcode :global(.barcode) {
+    width: 220px;
+  }
+
+  .note-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 0;
+    border-top: 1px solid var(--form-line);
+  }
+
+  .note-fields > div {
+    padding: var(--space-3) var(--space-3) var(--space-3) 0;
+    border-bottom: 1px solid var(--form-line);
+  }
+
+  .note-fields > div.wide {
+    grid-column: 1 / -1;
+  }
+
+  .note-fields dd {
+    margin: var(--space-1) 0 0;
+  }
+
+  .note-lines {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .note-demo {
+    font-weight: 600;
+  }
+
+  .note-stamp {
+    position: absolute;
+    right: var(--space-5);
+    top: 4.5rem;
+    color: var(--pay);
+    font-size: var(--step-3);
+    transform: rotate(-12deg);
+    animation: stamp-in 420ms var(--ease-out) 200ms both;
+  }
+
+  @keyframes stamp-in {
+    from {
+      opacity: 0;
+      transform: rotate(-12deg) scale(1.6);
+    }
+    to {
+      opacity: 0.9;
+      transform: rotate(-12deg) scale(1);
+    }
+  }
+
+  .note-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  @media (max-width: 960px) {
+    .checkout {
+      grid-template-columns: 1fr;
+    }
+
+    .summary {
+      position: static;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .grid-2,
+    .note-fields {
+      grid-template-columns: 1fr;
+    }
+
+    .line {
+      grid-template-columns: 72px minmax(0, 1fr) auto;
+      grid-template-areas:
+        'photo words words'
+        'photo qty total';
+      align-items: start;
+      gap: var(--space-2) var(--space-3);
+    }
+
+    .line-photo :global(img) {
+      width: 72px;
+    }
+
+    .line-qty {
+      justify-items: start;
+    }
+
+    .line-total {
+      align-self: center;
+      min-width: 0;
+    }
+
+    .note-paper {
+      padding-inline: var(--space-4);
+    }
+
+    .note-band {
+      margin-inline: calc(var(--space-4) * -1);
+      padding-inline: var(--space-4);
+    }
+
+    .note-stamp {
+      top: 3.5rem;
+      right: var(--space-3);
+      font-size: var(--step-2);
+    }
+  }
+</style>

@@ -1,0 +1,136 @@
+{
+  "title": "Boutique store demo: choose the look",
+  "question": "The roll picked the Cash on Delivery Slip. Keep it, take another card, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Cash on Delivery Slip",
+      "kicker": "THE ROLL",
+      "lineage": "the courier consignment note every Pakistani shopper signs at the door: a carbon copy slip, a barcode, the COD amount box, a city code and kraft parcel tape",
+      "thesis": "The store as the parcel on its way to you: every piece wears a consignment label with its price in the COD amount box, its stitching spelled out and its delivery days by city, so ordering feels as certain as signing for the parcel.",
+      "palette": ["#fbfaf5", "#141414", "#1f3fbf", "#e8481c", "#c9a77c"],
+      "materials": ["carbon copy slip", "barcode and rubber stamp", "kraft parcel tape"],
+      "viewport": "This week's lawn suit as a big photo with a consignment label stuck on its corner: article code, 3-piece unstitched, Rs 6,490 in the COD amount box, Lahore 1 day and Karachi 3 days. The boutique's name sits stamped in the sender block, with an Add to parcel button.",
+      "risk": "A courier slip is a logistics object. If the photos are small, it reads like a tracking site instead of a boutique.",
+      "raised": [
+        { "from": "challenger-ikebana", "raise": "One piece per view on the home page, with real empty space around it, so the clothes feel chosen, not stocked." },
+        { "from": "challenger-film", "raise": "One accent colour is kept for one job only: the courier orange marks the thing you are about to pay for." },
+        { "from": "challenger-terminal", "raise": "Order states print themselves as lines on the slip (packed, handed to courier, out for delivery) instead of badges." },
+        { "from": "challenger-zone", "raise": "Prices and quantities sit in tabular figures in ruled boxes, so totals line up like a real bill." },
+        { "from": "challenger-cel", "raise": "Buttons press down like a rubber stamp and leave a short mark, so every add to parcel feels done." },
+        { "from": "challenger-poster", "raise": "The new collection is ranked by weight: this week's drop is set biggest, and older drops step down in size." }
+      ]
+    },
+    {
+      "id": "model-pick",
+      "label": "Lawn Lookbook",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "the printed lawn brochure brands hand out before the summer launch: full bleed model shots, a swatch of each print, the article code and price on the facing page",
+      "thesis": "The store as this season's lookbook: you turn pages of full bleed looks, each with its print swatch, code and price, and add to bag straight from the spread.",
+      "palette": ["#f6f1ea", "#1c1c1c", "#b5476b", "#6f8f72"],
+      "materials": ["glossy brochure paper", "print swatches", "a numbered spread"],
+      "viewport": "A full bleed model shot on the left page, the print swatch and article code with the price on the right, and a page number in the corner.",
+      "risk": "The most familiar choice for a lawn brand. It can look like every designer's launch site."
+    },
+    {
+      "id": "challenger-poster",
+      "label": "Sound System Bill",
+      "verdict": "competitive",
+      "lineage": "a screened dance poster on fluorescent card, names ranked in outlined block caps",
+      "thesis": "The collection as a sale bill: this week's drop in the biggest block caps, prices struck across like a venue line.",
+      "palette": ["#fff200", "#ff4fa3", "#111111"],
+      "materials": ["fluorescent card", "heavy screened ink"],
+      "viewport": "Ranked block caps of the new drops over fluorescent card, with the sale price struck across the middle.",
+      "case": "Holds audience identification, because Pakistani lawn sale banners use the same loud fluorescent print, but the clothes lose to the type.",
+      "risk": "Loud enough to bury the clothes.",
+      "hero": "https://impeccable.style/worlds/cards/posters-covers-sleeves-soundsystem-dance-poster-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/posters-covers-sleeves-soundsystem-dance-poster.webp"
+    },
+    {
+      "id": "challenger-ikebana",
+      "label": "Ikebana Alcove",
+      "verdict": "declined",
+      "lineage": "one branch and three irises in a quiet alcove",
+      "thesis": "One outfit at a time in charged empty space.",
+      "palette": ["#ece6dc", "#6b5a48", "#3b5ba5"],
+      "materials": ["plaster", "a single stem"],
+      "viewport": "One suit off centre in a pale alcove.",
+      "case": "Fuses poorly: too quiet and foreign for a Lahore boutique's customers.",
+      "kept": "Empty space as the sign of care.",
+      "risk": "Feels empty and slow.",
+      "hero": "https://impeccable.style/worlds/cards/growth-metamorphosis-branching-ikebana-ma-arrangement-hero.webp"
+    },
+    {
+      "id": "challenger-film",
+      "label": "Film Bloom",
+      "verdict": "declined",
+      "lineage": "hand processed 16mm film with light leaks",
+      "thesis": "Looks as frames on a scratched strip.",
+      "palette": ["#1a1a1a", "#b8b8b0", "#ff7a1a"],
+      "materials": ["film grain", "light leaks"],
+      "viewport": "A strip of outfit frames with one lit by an orange leak.",
+      "case": "Fuses poorly: the grain and leaks fight the true colours of the fabric.",
+      "kept": "One accent kept for one state.",
+      "risk": "Colours of the clothes become untrustworthy.",
+      "hero": "https://impeccable.style/worlds/cards/cinema-cinematography-editing-hand-processed-film-bloom-hero.webp"
+    },
+    {
+      "id": "challenger-terminal",
+      "label": "Phosphor Terminal",
+      "verdict": "declined",
+      "lineage": "a green phosphor terminal at midnight",
+      "thesis": "Shopping as a typed dialogue.",
+      "palette": ["#050805", "#33ff66"],
+      "materials": ["glass", "scanlines"],
+      "viewport": "A green transcript listing the collection.",
+      "case": "Fuses poorly: a terminal cannot show a print or a colour.",
+      "kept": "States that print themselves.",
+      "risk": "Hides the clothes entirely.",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-phosphor-terminal-midnight-hero.webp"
+    },
+    {
+      "id": "challenger-zone",
+      "label": "Exposure Record",
+      "verdict": "declined",
+      "lineage": "a darkroom printer's exposure record with zone sheets",
+      "thesis": "Products as hatched sheets on a zone ramp.",
+      "palette": ["#e9e9e6", "#2a2a2a", "#d01f8a"],
+      "materials": ["tracing paper", "hatching"],
+      "viewport": "Overlapping sheets with tabular numbers.",
+      "case": "Fuses poorly: technical and cold for fashion.",
+      "kept": "Tabular figures in ruled boxes.",
+      "risk": "Reads as a lab tool.",
+      "hero": "https://impeccable.style/worlds/cards/operate-b-exposure-record-zone-sheets-hero.webp"
+    },
+    {
+      "id": "challenger-cel",
+      "label": "Rubber Hose Cel",
+      "verdict": "declined",
+      "lineage": "an early sound era cartoon cel framed by an iris",
+      "thesis": "The store as a sequence of cartoon gags.",
+      "palette": ["#111111", "#ffffff", "#9a9a9a"],
+      "materials": ["cel ink", "gray wash"],
+      "viewport": "A product inside an oval iris with bouncy buttons.",
+      "case": "Fuses poorly: black and white cartoons cannot carry fabric colour.",
+      "kept": "Buttons that squash when pressed.",
+      "risk": "Childish for formal wear.",
+      "hero": "https://impeccable.style/worlds/cards/pop-culture-shelf-rubber-hose-cel-hero.webp"
+    }
+  ],
+  "reroll": {
+    "registers": ["safer", "bolder"]
+  },
+  "buildPath": {
+    "value": "code"
+  },
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "thesis": "A clean white fashion store with big model photos, a filter bar and a quick add to bag, done very well.",
+    "palette": ["#ffffff", "#1a1a1a", "#c4a46b"],
+    "materials": ["white space", "model photos", "product grid"],
+    "viewport": "A full width campaign photo, then a grid of products with prices and a filter bar.",
+    "risk": "Looks like every other Pakistani fashion brand's site."
+  },
+  "steer": true
+}

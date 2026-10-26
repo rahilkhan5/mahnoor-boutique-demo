@@ -1,0 +1,815 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Label from '../components/Label.astro';
+import ProductCard from '../components/ProductCard.astro';
+import Tape from '../components/Tape.astro';
+import { shop, COLLECTIONS, products, delivery, PAYMENTS, reviews, FREE_DELIVERY_FROM } from '../data/store.js';
+import { rupees, unitPrice } from '../lib/store.js';
+
+const hero = products.find((p) => p.slug === 'butter-lawn')!;
+const alsoNew = ['red-zari-formal', 'mint-lawn', 'peach-pret'].map((s) => products.find((p) => p.slug === s)!);
+const byCollection = Object.keys(COLLECTIONS).map((key) => ({ key, ...COLLECTIONS[key], items: products.filter((p) => p.collection === key) }));
+const payIcons = { cod: 'cash', jazzcash: 'phone', easypaisa: 'phone', card: 'card' } as const;
+const names = Object.fromEntries(products.map((p) => [p.slug, p.name]));
+---
+
+<Base title={`${shop.name}: lawn, ready to wear and formals, cash on delivery`} description="Summer lawn, ready to wear kurtas and wedding formals from a Lahore boutique. Real prices, sizes and delivery days by city. Cash on delivery, JazzCash, Easypaisa or card. A demo store.">
+  <section class="hero page" aria-labelledby="hero-title">
+    <figure class="hero-photo">
+      <img
+        src={`/photos/${hero.slug}-1200.webp`}
+        srcset={`/photos/${hero.slug}-600.webp 600w, /photos/${hero.slug}-1200.webp 1200w`}
+        sizes="(min-width: 900px) 46vw, 100vw"
+        width="1200"
+        height="1800"
+        alt={hero.alt}
+        fetchpriority="high"
+      />
+      <Label product={hero} class="hero-label" compact />
+    </figure>
+
+    <div class="hero-words">
+      <h1 id="hero-title">{hero.name}</h1>
+      <p class="hero-sub">New this week. {hero.blurb}</p>
+      <div class="hero-actions">
+        <button class="button pay" type="button" data-quick-add={hero.slug} data-stock={hero.stock}>
+          <Icon name="parcel" />
+          Add to parcel
+        </button>
+        <a class="button" href={`/p/${hero.slug}/`}>See the piece</a>
+      </div>
+      <p class="hero-note" aria-live="polite" data-add-note></p>
+
+      <div class="also">
+        <h2 class="visually-hidden">Also new</h2>
+        <ol class="also-list">
+          {
+            alsoNew.map((p, i) => (
+              <li class={`rank-${i + 1}`}>
+                <a href={`/p/${p.slug}/`}>{p.name}</a>
+                <span class="data">{rupees(unitPrice(p))}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="promise page" aria-label="How buying works here">
+    <div>
+      <span class="field-label">Payment</span>
+      <p>Cash on delivery in every city, or JazzCash, Easypaisa and card.</p>
+    </div>
+    <div>
+      <span class="field-label">Delivery</span>
+      <p>Free over <span class="data">{rupees(FREE_DELIVERY_FROM)}</span>. Lahore in 1 to 2 days.</p>
+    </div>
+    <div>
+      <span class="field-label">Exchange</span>
+      <p>Wrong size? Exchange within 7 days of delivery.</p>
+    </div>
+  </section>
+
+  <div class="shop page" id="shop">
+    <div class="shop-bar">
+      <div class="chips" role="group" aria-label="Show">
+        <button class="chip" type="button" aria-pressed="false" data-filter="stock">In stock only</button>
+        <button class="chip" type="button" aria-pressed="false" data-filter="sale">On sale</button>
+      </div>
+      <label class="sort">
+        <span>Sort</span>
+        <select data-sort>
+          <option value="new">Newest first</option>
+          <option value="low">Price, low to high</option>
+          <option value="high">Price, high to low</option>
+        </select>
+      </label>
+    </div>
+    <p class="shop-result" aria-live="polite" data-result>Showing all {products.length} pieces.</p>
+
+    {
+      byCollection.map((c) => (
+        <section class="collection" id={c.key} aria-labelledby={`${c.key}-title`} data-collection-section>
+          <div class="collection-head">
+            <h2 id={`${c.key}-title`}>{c.label}</h2>
+            <span class="collection-stamp urdu" lang="ur" aria-hidden="true">
+              {c.urdu}
+            </span>
+            <p class="collection-note">
+              {c.note}. <span class="data" data-count>{c.items.length}</span> pieces.
+            </p>
+          </div>
+          <ul class="grid" data-grid style={`--cols: ${c.items.length}`}>
+            {c.items.map((p, i) => (
+              <ProductCard product={p} index={i} eager={c.key === 'lawn' && i < 2} />
+            ))}
+          </ul>
+          <p class="collection-empty" data-empty hidden>
+            Nothing here with these filters.
+          </p>
+        </section>
+      ))
+    }
+  </div>
+
+  <Tape tilt={0.8} />
+
+  <section class="ways page" aria-labelledby="ways-title">
+    <h2 id="ways-title">To your door, your way</h2>
+    <div class="ways-grid">
+      <div class="slip">
+        <h3>Delivery by city</h3>
+        <table class="days">
+          <thead>
+            <tr>
+              <th scope="col">City</th>
+              <th scope="col">Code</th>
+              <th scope="col">Working days</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              delivery.map((d) => (
+                <tr>
+                  <th scope="row">{d.city}</th>
+                  <td class="data">{d.code}</td>
+                  <td class="data">{d.days}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+        <p class="slip-note">Stitched to your size? Add 7 working days.</p>
+      </div>
+      <div class="slip copy-yellow">
+        <h3>Pay the way you like</h3>
+        <ul class="pays">
+          {
+            Object.entries(PAYMENTS).map(([key, p]) => (
+              <li>
+                <Icon name={payIcons[key as keyof typeof payIcons]} />
+                <span>
+                  <strong>{p.label}</strong>
+                  <span>{p.note}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="slip-note">In this demo nothing is charged, whichever you pick.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="travel page" aria-labelledby="travel-title">
+    <div class="travel-words">
+      <h2 id="travel-title">Every order prints its own trail</h2>
+      <p>After you order, your consignment note shows each step as it happens. No need to message us to ask where it is.</p>
+      <a class="button" href="/track/"><Icon name="track" />Track an order</a>
+    </div>
+    <ol class="trail data" aria-label="Example of an order's trail">
+      <li><span>Mon 21:04</span>Order placed, cash on delivery</li>
+      <li><span>Tue 11:30</span>Packed at MM Alam Road, Lahore</li>
+      <li><span>Tue 17:10</span>Handed to courier, LHE to MUX</li>
+      <li><span>Wed 09:45</span>Out for delivery in Multan</li>
+      <li><span>Wed 14:20</span>Delivered, Rs 6,490 paid to rider</li>
+    </ol>
+  </section>
+
+  <Tape tilt={-0.6} />
+
+  <section class="signed page" aria-labelledby="signed-title">
+    <h2 id="signed-title">Signed for</h2>
+    <p class="signed-note">Example reviews written for this demo.</p>
+    <ul class="receipts">
+      {
+        reviews.map((r) => (
+          <li class="receipt">
+            <p class="receipt-stars" role="img" aria-label={`${r.stars} out of 5`}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Icon name="star" class={i < r.stars ? 'on' : 'off'} />
+              ))}
+            </p>
+            <p class="receipt-text">{r.text}</p>
+            <p class="receipt-who">
+              <span>{r.name}</span>
+              <a class="data" href={`/p/${r.slug}/`}>{names[r.slug]}</a>
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>
+
+<script>
+  import { addToParcel, parcelCount, qtyInParcel } from '../lib/store.js';
+
+  // Quick add on the hero: unstitched fabric, no size needed.
+  const note = document.querySelector<HTMLElement>('[data-add-note]')!;
+  document.querySelectorAll<HTMLButtonElement>('[data-quick-add]').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const slug = btn.dataset.quickAdd!;
+      const max = Math.min(9, Number(btn.dataset.stock));
+      if (qtyInParcel(slug) >= max) {
+        note.textContent = `Your parcel already has all ${max} of this piece that you can order.`;
+        return;
+      }
+      const ok = addToParcel({ slug, size: null, stitching: false, qty: 1 });
+      if (!ok) {
+        note.textContent = 'This browser is not letting the site save your parcel. Try outside private mode.';
+        return;
+      }
+      const stamp = document.querySelector<HTMLElement>('.hero-label [data-added-stamp]')!;
+      stamp.hidden = true;
+      void stamp.offsetWidth;
+      stamp.hidden = false;
+      const n = parcelCount();
+      note.innerHTML = '';
+      note.append(`Added. Your parcel has ${n} ${n === 1 ? 'piece' : 'pieces'}. `);
+      const link = document.createElement('a');
+      link.href = '/parcel/';
+      link.textContent = 'Go to parcel';
+      note.append(link);
+    }),
+  );
+
+  // Filters and sort across the three collections.
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-piece]')];
+  const sections = [...document.querySelectorAll<HTMLElement>('[data-collection-section]')];
+  const chips = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+  const sort = document.querySelector<HTMLSelectElement>('[data-sort]')!;
+  const result = document.querySelector<HTMLElement>('[data-result]')!;
+
+  function apply() {
+    const want = Object.fromEntries(chips.map((c) => [c.dataset.filter, c.getAttribute('aria-pressed') === 'true']));
+    let shown = 0;
+    for (const card of cards) {
+      const ok = (!want.stock || Number(card.dataset.stock) > 0) && (!want.sale || card.dataset.sale === '1');
+      card.hidden = !ok;
+      if (ok) shown += 1;
+    }
+    for (const section of sections) {
+      const grid = section.querySelector<HTMLElement>('[data-grid]')!;
+      const items = [...grid.children] as HTMLElement[];
+      const key = sort.value;
+      items.sort((a, b) => {
+        if (key === 'low') return Number(a.dataset.price) - Number(b.dataset.price);
+        if (key === 'high') return Number(b.dataset.price) - Number(a.dataset.price);
+        return Number(a.dataset.order) - Number(b.dataset.order);
+      });
+      items.forEach((el) => grid.append(el));
+      const visible = items.filter((el) => !el.hidden).length;
+      section.querySelector('[data-count]')!.textContent = String(visible);
+      section.querySelector<HTMLElement>('[data-empty]')!.hidden = visible > 0;
+    }
+    const parts = [want.stock && 'in stock', want.sale && 'on sale'].filter(Boolean);
+    result.textContent = parts.length ? `Showing ${shown} of ${cards.length} pieces, ${parts.join(' and ')}.` : `Showing all ${cards.length} pieces.`;
+  }
+  chips.forEach((c) =>
+    c.addEventListener('click', () => {
+      c.setAttribute('aria-pressed', String(c.getAttribute('aria-pressed') !== 'true'));
+      apply();
+    }),
+  );
+  sort.addEventListener('change', apply);
+</script>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: var(--space-8);
+    align-items: center;
+    padding-block: var(--space-6) var(--space-8);
+  }
+
+  .hero-photo {
+    position: relative;
+    margin: 0;
+  }
+
+  .hero-photo img {
+    width: 100%;
+    height: min(78svh, 760px);
+    min-height: 520px;
+    object-fit: cover;
+    object-position: 50% 30%;
+    background: var(--slip-deep);
+  }
+
+  .hero-photo :global(.hero-label) {
+    position: absolute;
+    right: -14%;
+    bottom: 6%;
+  }
+
+  .hero-words {
+    display: grid;
+    gap: var(--space-5);
+    align-content: center;
+    padding-left: var(--space-6);
+  }
+
+  .hero h1 {
+    font-size: var(--step-4);
+    font-weight: 900;
+    line-height: 0.86;
+  }
+
+  .hero-sub {
+    max-width: 34ch;
+    font-size: var(--step-1);
+    line-height: 1.45;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .hero-note {
+    min-height: 1.5em;
+    font-weight: 600;
+  }
+
+  .also {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: var(--rule);
+  }
+
+  .also-list {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Drops ranked by weight: the newest is biggest. */
+  .also-list li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    font-family: var(--font-form);
+    font-weight: 850;
+    line-height: 0.95;
+  }
+
+  .also-list a {
+    text-decoration: none;
+  }
+
+  .also-list a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+
+  .also-list .data {
+    flex: none;
+    font-size: var(--step--1);
+    color: var(--pay);
+  }
+
+  .rank-1 {
+    font-size: var(--step-3);
+  }
+
+  .rank-2 {
+    font-size: var(--step-2);
+  }
+
+  .rank-3 {
+    font-size: var(--step-1);
+  }
+
+  .promise {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-block: var(--rule);
+  }
+
+  .promise > div {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-4) var(--space-5) var(--space-4) 0;
+  }
+
+  .promise > div + div {
+    padding-left: var(--space-5);
+    border-left: 1px solid var(--form-line);
+  }
+
+  .shop {
+    padding-top: var(--space-8);
+  }
+
+  .shop-bar {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-block: var(--space-3);
+    background: var(--slip);
+    border-bottom: 1px solid var(--form-line);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--space-4);
+    border: 1.5px solid var(--form);
+    background: transparent;
+    color: var(--form);
+    font-family: var(--font-form);
+    font-weight: 800;
+    font-size: var(--step-0);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .chip[aria-pressed='true'] {
+    background: var(--form);
+    color: var(--white);
+  }
+
+  .sort {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-form);
+    font-weight: 800;
+    font-size: var(--step-0);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--form);
+  }
+
+  .sort select {
+    min-height: 44px;
+    padding: 0 2.25rem 0 var(--space-3);
+    border: 1.5px solid var(--form);
+    border-radius: 0;
+    background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%231f3fbf' stroke-width='2'/%3E%3C/svg%3E") right 10px center / 16px no-repeat;
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: var(--step--1);
+    letter-spacing: 0;
+    text-transform: none;
+    appearance: none;
+  }
+
+  .shop-result {
+    margin-top: var(--space-3);
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .collection {
+    padding-top: var(--space-7);
+    scroll-margin-top: var(--space-8);
+  }
+
+  .collection-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-2) var(--space-5);
+    margin-bottom: var(--space-5);
+  }
+
+  .collection-stamp {
+    padding: 0 var(--space-3);
+    border: 2px solid var(--form);
+    border-radius: 6px;
+    color: var(--form);
+    font-size: var(--step-1);
+    line-height: 1.7;
+    transform: rotate(-5deg) translateY(-6px);
+  }
+
+  .collection-note {
+    flex-basis: 100%;
+    color: var(--ink-soft);
+  }
+
+  /* One rack per collection: every piece of a collection on one row. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
+    gap: var(--space-7) var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .collection-empty {
+    padding: var(--space-5);
+    border: 1.5px dashed var(--form-line);
+    color: var(--ink-soft);
+  }
+
+  .ways {
+    display: grid;
+    gap: var(--space-6);
+    padding-top: var(--space-9);
+  }
+
+  /* After a strip of tape, the tape's own margin is the gap. */
+  :global(.tape) + .ways,
+  :global(.tape) + .signed {
+    padding-top: 0;
+  }
+
+  .ways-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-5);
+    align-items: start;
+  }
+
+  .slip {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: var(--white);
+    border: var(--rule);
+  }
+
+  .copy-yellow {
+    background: var(--copy-yellow);
+  }
+
+  .days {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--step--1);
+  }
+
+  .days th,
+  .days td {
+    padding: var(--space-2) var(--space-2) var(--space-2) 0;
+    border-bottom: 1px solid var(--form-line);
+    text-align: left;
+  }
+
+  .days thead th {
+    font-family: var(--font-form);
+    font-weight: 700;
+    font-size: var(--step--1);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--form);
+  }
+
+  .days tbody th {
+    font-weight: 500;
+  }
+
+  .slip-note {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .pays {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pays li {
+    display: flex;
+    gap: var(--space-3);
+    padding-block: var(--space-3);
+    border-bottom: 1px solid rgb(31 63 191 / 0.25);
+  }
+
+  .pays :global(.icon) {
+    flex: none;
+    width: 26px;
+    color: var(--form);
+  }
+
+  .pays span span {
+    display: block;
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .travel {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: var(--space-7);
+    align-items: center;
+    padding-top: var(--space-9);
+  }
+
+  .travel-words {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+
+  .travel-words p {
+    max-width: 38ch;
+  }
+
+  .trail {
+    margin: 0;
+    padding: var(--space-5);
+    background: var(--copy-pink);
+    border: var(--rule);
+    list-style: none;
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+
+  .trail li {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: var(--space-3);
+    padding-block: var(--space-2);
+    border-bottom: 1px dashed rgb(31 63 191 / 0.35);
+  }
+
+  .trail li:last-child {
+    border-bottom: 0;
+    font-weight: 600;
+  }
+
+  .trail span {
+    color: var(--form);
+  }
+
+  .signed {
+    padding-top: var(--space-9);
+  }
+
+  .signed-note {
+    margin-top: var(--space-2);
+    color: var(--ink-soft);
+  }
+
+  .receipts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-4);
+    margin: var(--space-5) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .receipt {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding: var(--space-4);
+    background: var(--white);
+    border: 1px solid var(--form-line);
+    border-top: 6px dashed var(--form-line);
+  }
+
+  .receipt-stars {
+    display: flex;
+    gap: 2px;
+  }
+
+  .receipt-stars :global(.icon) {
+    width: 18px;
+  }
+
+  .receipt-stars :global(.on) {
+    fill: var(--ink);
+    stroke: var(--ink);
+  }
+
+  .receipt-stars :global(.off) {
+    color: var(--form-line);
+  }
+
+  .receipt-who {
+    display: grid;
+    gap: 2px;
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+
+  .receipt-who .data {
+    font-size: var(--step--2);
+    font-weight: 500;
+    color: var(--form);
+  }
+
+  @media (max-width: 1100px) {
+    .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-7) var(--space-5);
+    }
+
+    .receipts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hero-photo :global(.hero-label) {
+      right: -6%;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+      padding-block: var(--space-4) var(--space-7);
+    }
+
+    .hero-words {
+      display: contents;
+    }
+
+    .hero h1 {
+      order: 1;
+    }
+
+    .hero-photo {
+      order: 2;
+    }
+
+    .hero-actions {
+      order: 3;
+    }
+
+    .hero-note {
+      order: 4;
+    }
+
+    .hero-sub {
+      order: 5;
+    }
+
+    .also {
+      order: 6;
+    }
+
+    .hero-photo img {
+      height: auto;
+      min-height: 0;
+      aspect-ratio: 4 / 5;
+    }
+
+    .hero-photo :global(.hero-label) {
+      right: var(--space-2);
+      bottom: var(--space-3);
+    }
+
+    .promise,
+    .ways-grid,
+    .travel {
+      grid-template-columns: 1fr;
+    }
+
+    .promise > div + div {
+      padding-left: 0;
+      border-left: 0;
+      border-top: 1px solid var(--form-line);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-6) var(--space-3);
+    }
+
+    .receipts {
+      grid-template-columns: 1fr;
+    }
+
+    .trail li {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .hero-actions .button {
+      flex: 1 1 auto;
+    }
+  }
+</style>

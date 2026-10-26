@@ -1,0 +1,501 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { shop } from '../data/store.js';
+---
+
+<Base title={`Track your order: ${shop.name}`} description="Follow an order from the boutique to your door, one printed line at a time. A demo store: orders live only in this browser." current="track">
+  <div class="page track" data-track>
+    <div class="track-head">
+      <h1>Track your order</h1>
+      <p class="track-sub">Every step prints as a new line on your consignment note. In this demo a step prints every 2 minutes, or press Show the next step.</p>
+    </div>
+
+    <form class="lookup" data-lookup novalidate>
+      <label class="field">
+        <span class="field-label">Order number</span>
+        <input name="no" placeholder="MB-123456" autocomplete="off" spellcheck="false" aria-describedby="lookup-msg" />
+      </label>
+      <button class="button" type="submit"><Icon name="track" />Find</button>
+      <p class="lookup-msg" id="lookup-msg" role="status" data-lookup-msg></p>
+    </form>
+
+    <div class="none" data-none hidden>
+      <p class="none-title">No orders on this device yet.</p>
+      <p>Orders placed in this demo stay in the browser they were placed in. Place one from your parcel and it shows up here with its trail.</p>
+      <a class="button" href="/#lawn">Browse the collection</a>
+    </div>
+
+    <ol class="orders" data-orders aria-label="Orders on this device, newest first"></ol>
+
+    <p class="clear-row" data-clear-row hidden>
+      <button class="clear" type="button" data-clear>Clear demo orders from this browser</button>
+    </p>
+  </div>
+
+  <template data-order-template>
+    <li class="order" tabindex="-1">
+      <p class="order-band">
+        <span>Consignment <span class="data" data-o-no></span></span>
+        <span class="data" data-o-date></span>
+      </p>
+      <dl class="order-fields">
+        <div>
+          <dt class="field-label">Deliver to</dt>
+          <dd data-o-to></dd>
+        </div>
+        <div>
+          <dt class="field-label">Expected</dt>
+          <dd data-o-eta></dd>
+        </div>
+        <div class="wide">
+          <dt class="field-label">Contents</dt>
+          <dd data-o-contents></dd>
+        </div>
+        <div>
+          <dt class="field-label">Payment</dt>
+          <dd data-o-pay></dd>
+        </div>
+        <div>
+          <dt class="field-label">Amount</dt>
+          <dd>
+            <span class="cod">
+              <span class="field-label" data-o-amount-label>COD amount</span>
+              <span class="amount" data-o-total></span>
+            </span>
+          </dd>
+        </div>
+      </dl>
+      <ol class="trail data" data-o-trail></ol>
+      <div class="order-foot">
+        <button class="button" type="button" data-o-next><Icon name="arrow" />Show the next step</button>
+        <span class="stamp order-stamp" data-o-stamp hidden aria-hidden="true">Delivered</span>
+      </div>
+    </li>
+  </template>
+</Base>
+
+<script>
+  import { readStore, writeStore, rupees, ORDERS_KEY } from '../lib/store.js';
+  import { PAYMENTS } from '../data/store.js';
+
+  type Order = {
+    no: string;
+    placedAt: string;
+    steps: string[];
+    name: string;
+    city: string;
+    cityName: string;
+    pay: string;
+    eta: string;
+    total: number;
+    lines: { name: string; code: string; qty: number; what: string }[];
+  };
+
+  const STEP_MS = 2 * 60 * 1000;
+  const root = document.querySelector<HTMLElement>('[data-track]')!;
+  const list = root.querySelector<HTMLOListElement>('[data-orders]')!;
+  const none = root.querySelector<HTMLElement>('[data-none]')!;
+  const clearRow = root.querySelector<HTMLElement>('[data-clear-row]')!;
+  const clearBtn = root.querySelector<HTMLButtonElement>('[data-clear]')!;
+  const lookup = root.querySelector<HTMLFormElement>('[data-lookup]')!;
+  const lookupMsg = root.querySelector<HTMLElement>('[data-lookup-msg]')!;
+  const tpl = document.querySelector<HTMLTemplateElement>('[data-order-template]')!;
+
+  const printed = new Set<string>();
+  let first = true;
+
+  function stepText(o: Order, i: number) {
+    const city = o.city === 'PAK' ? 'your city' : o.cityName;
+    return [
+      o.pay === 'cod' ? 'Order placed, cash on delivery' : `Order placed, ${PAYMENTS[o.pay as keyof typeof PAYMENTS].label} (demo)`,
+      'Packed at MM Alam Road, Lahore',
+      `Handed to courier, LHE to ${o.city}`,
+      `Out for delivery in ${city}`,
+      o.pay === 'cod' ? `Delivered, ${rupees(o.total)} paid to rider` : 'Delivered and signed for',
+    ][i];
+  }
+
+  const when = (iso: string) => {
+    const d = new Date(iso);
+    return `${d.toLocaleDateString('en-GB', { weekday: 'short' })} ${d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`;
+  };
+
+  function load(): Order[] {
+    const orders = readStore(ORDERS_KEY, []) as Order[];
+    return Array.isArray(orders) ? orders.filter((o) => o && o.no && Array.isArray(o.steps)) : [];
+  }
+
+  // Demo time: one new step every 2 minutes after the last one.
+  function advance(orders: Order[]) {
+    const now = Date.now();
+    let changed = false;
+    for (const o of orders) {
+      while (o.steps.length < 5) {
+        const next = new Date(o.steps[o.steps.length - 1]).getTime() + STEP_MS;
+        if (next > now) break;
+        o.steps.push(new Date(next).toISOString());
+        changed = true;
+      }
+    }
+    if (changed) writeStore(ORDERS_KEY, orders);
+    return orders;
+  }
+
+  function paint() {
+    const orders = advance(load());
+    none.hidden = orders.length > 0;
+    clearRow.hidden = orders.length === 0;
+    const focusedNo = (document.activeElement as HTMLElement | null)?.closest<HTMLElement>('[data-no]')?.dataset.no;
+    list.replaceChildren(
+      ...orders.map((o) => {
+        const li = tpl.content.firstElementChild!.cloneNode(true) as HTMLElement;
+        li.id = o.no;
+        li.dataset.no = o.no;
+        li.setAttribute('aria-label', `Order ${o.no}`);
+        li.querySelector('[data-o-no]')!.textContent = o.no;
+        li.querySelector('[data-o-date]')!.textContent = new Date(o.placedAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        li.querySelector('[data-o-to]')!.textContent = `${o.name}, ${o.cityName}`;
+        li.querySelector('[data-o-eta]')!.textContent = o.steps.length >= 5 ? 'Delivered' : o.eta;
+        const count = o.lines.reduce((n, l) => n + l.qty, 0);
+        li.querySelector('[data-o-contents]')!.textContent = `${count} ${count === 1 ? 'piece' : 'pieces'}: ${o.lines.map((l) => (l.qty > 1 ? `${l.qty} × ${l.name}` : l.name)).join(', ')}`;
+        li.querySelector('[data-o-pay]')!.textContent = o.pay === 'cod' ? 'Cash on delivery' : `${PAYMENTS[o.pay as keyof typeof PAYMENTS].label} (demo, nothing charged)`;
+        li.querySelector('[data-o-amount-label]')!.textContent = o.pay === 'cod' ? 'COD amount' : 'Total';
+        li.querySelector('[data-o-total]')!.textContent = rupees(o.total);
+
+        const trail = li.querySelector<HTMLOListElement>('[data-o-trail]')!;
+        trail.setAttribute('aria-label', `Trail for ${o.no}`);
+        for (let i = 0; i < 5; i += 1) {
+          const row = document.createElement('li');
+          const t = document.createElement('span');
+          const done = i < o.steps.length;
+          t.className = 'trail-time';
+          t.textContent = done ? when(o.steps[i]) : 'Waiting';
+          row.append(t, stepText(o, i));
+          if (!done) {
+            row.className = 'waiting';
+            if (i > o.steps.length) row.hidden = true;
+          } else {
+            const key = `${o.no}:${i}`;
+            if (!printed.has(key)) {
+              if (!first) row.className = 'fresh';
+              printed.add(key);
+            }
+          }
+          trail.append(row);
+        }
+
+        const done = o.steps.length >= 5;
+        const next = li.querySelector<HTMLButtonElement>('[data-o-next]')!;
+        next.hidden = done;
+        next.setAttribute('aria-label', `Show the next step for ${o.no}`);
+        next.addEventListener('click', () => {
+          const all = load();
+          const target = all.find((x) => x.no === o.no);
+          if (!target || target.steps.length >= 5) return;
+          target.steps.push(new Date().toISOString());
+          writeStore(ORDERS_KEY, all);
+          paint();
+        });
+        const stamp = li.querySelector<HTMLElement>('[data-o-stamp]')!;
+        stamp.hidden = !done;
+        stamp.removeAttribute('aria-hidden');
+        return li;
+      }),
+    );
+    if (focusedNo) {
+      const btn = list.querySelector<HTMLButtonElement>(`[data-no="${focusedNo}"] [data-o-next]`);
+      (btn && !btn.hidden ? btn : list.querySelector<HTMLElement>(`[data-no="${focusedNo}"]`))?.focus();
+    }
+    first = false;
+  }
+
+  function show(no: string) {
+    const el = document.getElementById(no);
+    if (!el) return false;
+    list.querySelectorAll('.order.found').forEach((x) => x.classList.remove('found'));
+    el.classList.add('found');
+    el.scrollIntoView({ block: 'start' });
+    el.focus({ preventScroll: true });
+    return true;
+  }
+
+  lookup.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = lookup.elements.namedItem('no') as HTMLInputElement;
+    const raw = input.value.trim().toUpperCase().replace(/\s+/g, '');
+    const no = /^\d{6}$/.test(raw) ? `MB-${raw}` : raw.replace(/^MB(\d)/, 'MB-$1');
+    if (!/^MB-\d{6}$/.test(no)) {
+      lookupMsg.textContent = 'Order numbers look like MB-123456.';
+      input.setAttribute('aria-invalid', 'true');
+      return;
+    }
+    input.removeAttribute('aria-invalid');
+    lookupMsg.textContent = show(no) ? `Found ${no}.` : `No order ${no} on this device. In this demo, orders live only in the browser they were placed in.`;
+  });
+
+  let armed = false;
+  clearBtn.addEventListener('click', () => {
+    if (!armed) {
+      armed = true;
+      clearBtn.textContent = 'Press again to clear all demo orders';
+      window.setTimeout(() => {
+        armed = false;
+        clearBtn.textContent = 'Clear demo orders from this browser';
+      }, 4000);
+      return;
+    }
+    writeStore(ORDERS_KEY, []);
+    armed = false;
+    clearBtn.textContent = 'Clear demo orders from this browser';
+    paint();
+    lookupMsg.textContent = 'Demo orders cleared.';
+  });
+
+  paint();
+  if (location.hash) show(decodeURIComponent(location.hash.slice(1)));
+  window.setInterval(paint, 15000);
+  window.addEventListener('storage', (e) => e.key === ORDERS_KEY && paint());
+</script>
+
+<style>
+  .track {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-6) var(--space-8);
+  }
+
+  .track-head {
+    display: grid;
+    gap: var(--space-3);
+    padding-bottom: var(--space-4);
+    border-bottom: 4px double var(--form);
+  }
+
+  .track-head h1 {
+    font-size: var(--step-4);
+    font-weight: 900;
+  }
+
+  .track-sub {
+    max-width: 56ch;
+    color: var(--ink-soft);
+  }
+
+  .lookup {
+    display: grid;
+    grid-template-columns: minmax(0, 18rem) auto;
+    justify-content: start;
+    align-items: end;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .lookup .button {
+    min-height: 50px;
+  }
+
+  .lookup-msg {
+    grid-column: 1 / -1;
+    font-weight: 600;
+  }
+
+  .lookup-msg:empty {
+    display: none;
+  }
+
+  .none {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+    max-width: 40rem;
+  }
+
+  .none-title {
+    font-family: var(--font-form);
+    font-weight: 850;
+    font-size: var(--step-3);
+    line-height: 0.95;
+  }
+
+  .orders {
+    display: grid;
+    gap: var(--space-7);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .orders:empty {
+    display: none;
+  }
+
+  .order {
+    position: relative;
+    display: grid;
+    gap: var(--space-4);
+    max-width: 760px;
+    padding: 0 var(--space-5) var(--space-5);
+    background: var(--white);
+    border: var(--rule);
+    box-shadow: var(--lift);
+    scroll-margin-top: var(--space-5);
+    outline: none;
+  }
+
+  .order:focus-visible,
+  .order.found {
+    outline: 3px solid var(--form);
+    outline-offset: 4px;
+  }
+
+  .order-band {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-3);
+    margin: 0 calc(var(--space-5) * -1);
+    padding: var(--space-2) var(--space-5);
+    background: var(--form);
+    color: var(--white);
+    font-family: var(--font-form);
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .order-band .data {
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
+  .order-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 0;
+    border-top: 1px solid var(--form-line);
+  }
+
+  .order-fields > div {
+    padding: var(--space-3) var(--space-3) var(--space-3) 0;
+    border-bottom: 1px solid var(--form-line);
+  }
+
+  .order-fields > div.wide {
+    grid-column: 1 / -1;
+  }
+
+  .order-fields dd {
+    margin: var(--space-1) 0 0;
+  }
+
+  .trail {
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    background: var(--copy-pink);
+    border: 1px solid var(--form-line);
+    list-style: none;
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+
+  /* Trail lines are written by the script, so they sit outside the scope. */
+  .trail :global(li) {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: var(--space-3);
+    padding-block: var(--space-2);
+    border-bottom: 1px dashed rgb(31 63 191 / 0.35);
+  }
+
+  .trail :global(li:last-child) {
+    border-bottom: 0;
+  }
+
+  .trail :global(.trail-time) {
+    color: var(--form);
+  }
+
+  .trail :global(.waiting),
+  .trail :global(.waiting .trail-time) {
+    color: var(--ink-soft);
+  }
+
+  /* A new line prints left to right, like the courier's printer. */
+  .trail :global(.fresh) {
+    animation: print 700ms steps(28, end) both;
+    background: rgb(255 255 255 / 0.55);
+  }
+
+  @keyframes print {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  .order-foot {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    min-height: 54px;
+  }
+
+  .order-stamp {
+    color: var(--pay);
+    font-size: var(--step-2);
+    transform: rotate(-10deg);
+  }
+
+  .clear-row {
+    padding-top: var(--space-2);
+  }
+
+  .clear {
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: var(--step--1);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  @media (max-width: 640px) {
+    .lookup {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .order {
+      padding-inline: var(--space-4);
+    }
+
+    .order-band {
+      margin-inline: calc(var(--space-4) * -1);
+      padding-inline: var(--space-4);
+    }
+
+    .order-fields {
+      grid-template-columns: 1fr;
+    }
+
+    .trail {
+      padding-inline: var(--space-3);
+    }
+
+    .trail :global(li) {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .trail :global(.fresh) {
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,462 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T02:56:59.621Z",
+  "title": "Design System: Mahnoor Boutique",
+  "extensions": {
+    "colorMeta": {
+      "form-blue": {
+        "role": "primary",
+        "displayName": "Form Blue",
+        "canonical": "oklch(43% 0.21 266)",
+        "tonalRamp": [
+          "oklch(15% 0.15 266)",
+          "oklch(25% 0.15 266)",
+          "oklch(35% 0.15 266)",
+          "oklch(45% 0.15 266)",
+          "oklch(55% 0.15 266)",
+          "oklch(65% 0.15 266)",
+          "oklch(80% 0.15 266)",
+          "oklch(95% 0.15 266)"
+        ]
+      },
+      "form-line": {
+        "role": "primary",
+        "displayName": "Form Rule Blue",
+        "canonical": "oklch(81% 0.06 272)",
+        "tonalRamp": [
+          "oklch(15% 0.06 272)",
+          "oklch(25% 0.06 272)",
+          "oklch(35% 0.06 272)",
+          "oklch(45% 0.06 272)",
+          "oklch(55% 0.06 272)",
+          "oklch(65% 0.06 272)",
+          "oklch(80% 0.06 272)",
+          "oklch(95% 0.06 272)"
+        ]
+      },
+      "courier-orange": {
+        "role": "secondary",
+        "displayName": "Courier Orange",
+        "canonical": "oklch(55% 0.19 36)",
+        "tonalRamp": [
+          "oklch(15% 0.14 36)",
+          "oklch(25% 0.14 36)",
+          "oklch(35% 0.14 36)",
+          "oklch(45% 0.14 36)",
+          "oklch(55% 0.14 36)",
+          "oklch(65% 0.14 36)",
+          "oklch(80% 0.14 36)",
+          "oklch(95% 0.14 36)"
+        ]
+      },
+      "courier-orange-deep": {
+        "role": "secondary",
+        "displayName": "Courier Orange Deep",
+        "canonical": "oklch(48% 0.17 36)",
+        "tonalRamp": [
+          "oklch(15% 0.13 36)",
+          "oklch(25% 0.13 36)",
+          "oklch(35% 0.13 36)",
+          "oklch(45% 0.13 36)",
+          "oklch(55% 0.13 36)",
+          "oklch(65% 0.13 36)",
+          "oklch(80% 0.13 36)",
+          "oklch(95% 0.13 36)"
+        ]
+      },
+      "carbon-yellow": {
+        "role": "tertiary",
+        "displayName": "Carbon Yellow",
+        "canonical": "oklch(95% 0.05 95)",
+        "tonalRamp": [
+          "oklch(15% 0.05 95)",
+          "oklch(25% 0.05 95)",
+          "oklch(35% 0.05 95)",
+          "oklch(45% 0.05 95)",
+          "oklch(55% 0.05 95)",
+          "oklch(65% 0.05 95)",
+          "oklch(80% 0.05 95)",
+          "oklch(95% 0.05 95)"
+        ]
+      },
+      "carbon-pink": {
+        "role": "tertiary",
+        "displayName": "Carbon Pink",
+        "canonical": "oklch(93.5% 0.02 25)",
+        "tonalRamp": [
+          "oklch(15% 0.03 25)",
+          "oklch(25% 0.03 25)",
+          "oklch(35% 0.03 25)",
+          "oklch(45% 0.03 25)",
+          "oklch(55% 0.03 25)",
+          "oklch(65% 0.03 25)",
+          "oklch(80% 0.03 25)",
+          "oklch(95% 0.03 25)"
+        ]
+      },
+      "kraft-tape": {
+        "role": "tertiary",
+        "displayName": "Kraft Tape",
+        "canonical": "oklch(74% 0.07 75)",
+        "tonalRamp": [
+          "oklch(15% 0.07 75)",
+          "oklch(25% 0.07 75)",
+          "oklch(35% 0.07 75)",
+          "oklch(45% 0.07 75)",
+          "oklch(55% 0.07 75)",
+          "oklch(65% 0.07 75)",
+          "oklch(80% 0.07 75)",
+          "oklch(95% 0.07 75)"
+        ]
+      },
+      "slip-paper": {
+        "role": "neutral",
+        "displayName": "Slip Paper",
+        "canonical": "oklch(98.3% 0.008 100)",
+        "tonalRamp": [
+          "oklch(15% 0.008 100)",
+          "oklch(25% 0.008 100)",
+          "oklch(35% 0.008 100)",
+          "oklch(45% 0.008 100)",
+          "oklch(55% 0.008 100)",
+          "oklch(65% 0.008 100)",
+          "oklch(80% 0.008 100)",
+          "oklch(95% 0.008 100)"
+        ]
+      },
+      "slip-deep": {
+        "role": "neutral",
+        "displayName": "Slip Deep",
+        "canonical": "oklch(95% 0.012 90)",
+        "tonalRamp": [
+          "oklch(15% 0.012 90)",
+          "oklch(25% 0.012 90)",
+          "oklch(35% 0.012 90)",
+          "oklch(45% 0.012 90)",
+          "oklch(55% 0.012 90)",
+          "oklch(65% 0.012 90)",
+          "oklch(80% 0.012 90)",
+          "oklch(95% 0.012 90)"
+        ]
+      },
+      "label-white": {
+        "role": "neutral",
+        "displayName": "Label White",
+        "canonical": "oklch(100% 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(45% 0 0)",
+          "oklch(55% 0 0)",
+          "oklch(65% 0 0)",
+          "oklch(80% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(19% 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(45% 0 0)",
+          "oklch(55% 0 0)",
+          "oklch(65% 0 0)",
+          "oklch(80% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "oklch(41% 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(45% 0 0)",
+          "oklch(55% 0 0)",
+          "oklch(65% 0 0)",
+          "oklch(80% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "fix-red": {
+        "role": "error",
+        "displayName": "Fix Red",
+        "canonical": "oklch(48% 0.19 22)",
+        "tonalRamp": [
+          "oklch(15% 0.15 22)",
+          "oklch(25% 0.15 22)",
+          "oklch(35% 0.15 22)",
+          "oklch(45% 0.15 22)",
+          "oklch(55% 0.15 22)",
+          "oklch(65% 0.15 22)",
+          "oklch(80% 0.15 22)",
+          "oklch(95% 0.15 22)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The week's piece name on the home page and product names."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section and collection headings, the consignment note title."
+      },
+      "headline-small": {
+        "displayName": "Headline Small",
+        "purpose": "Brand name, large COD amounts, order numbers."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Piece names on cards and panel headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Reading text, 34 to 46ch beside photos."
+      },
+      "body-small": {
+        "displayName": "Body Small",
+        "purpose": "Hints, notes, contents lines."
+      },
+      "label": {
+        "displayName": "Printed Label",
+        "purpose": "Form blue uppercase field label above every filled in value."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Uppercase condensed button text."
+      },
+      "stamp": {
+        "displayName": "Stamp",
+        "purpose": "Rubber stamp marks: NEW, SALE, SOLD OUT, ADDED, BOOKED, DELIVERED."
+      },
+      "data": {
+        "displayName": "Filled In Data",
+        "purpose": "Codes, prices, quantities, days and trail lines in tabular figures."
+      },
+      "urdu-stamp": {
+        "displayName": "Nastaliq Stamp",
+        "purpose": "The boutique name and collection names stamped in Urdu."
+      }
+    },
+    "shadows": [
+      {
+        "name": "paper-lift",
+        "value": "0 1px 2px rgb(20 20 20 / 0.1), 0 16px 30px -18px rgb(20 20 20 / 0.45)",
+        "purpose": "Stuck on paper only: the consignment label, summary, note and order card."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Every press, stamp and tick."
+      },
+      {
+        "name": "stamp-press",
+        "value": "transform 120ms, scale(0.96) rotate(-0.6deg)",
+        "purpose": "Buttons press like a rubber stamp on active."
+      },
+      {
+        "name": "stamp-in",
+        "value": "380ms to 420ms, scale(1.6) to scale(1), opacity 0 to 0.9",
+        "purpose": "ADDED, BOOKED and DELIVERED stamps landing."
+      },
+      {
+        "name": "count-tick",
+        "value": "340ms, scale(1.45) rotate(-10deg) to none",
+        "purpose": "Header parcel count when it goes up."
+      },
+      {
+        "name": "print-line",
+        "value": "700ms steps(28, end), clip-path inset reveal left to right",
+        "purpose": "New tracking trail lines."
+      },
+      {
+        "name": "photo-zoom",
+        "value": "500ms, scale(1.03)",
+        "purpose": "Card photo on hover, hover capable pointers only."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "durations 0.01ms",
+        "purpose": "All motion collapses under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "rack-3",
+        "value": "1100px"
+      },
+      {
+        "name": "header-wrap",
+        "value": "960px"
+      },
+      {
+        "name": "hero-stack",
+        "value": "900px"
+      },
+      {
+        "name": "rack-2",
+        "value": "640px"
+      },
+      {
+        "name": "strip-short",
+        "value": "600px"
+      },
+      {
+        "name": "product-narrow",
+        "value": "520px"
+      },
+      {
+        "name": "brand-stamp-only",
+        "value": "480px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Plain Button",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "Every action except the two pay buttons.",
+      "html": "<button class=\"ds-btn\">See the piece</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 54px; padding: 0 32px; font-family: 'Sofia Sans Extra Condensed', 'Arial Narrow', sans-serif; font-weight: 800; font-size: 1.3125rem; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 0; cursor: pointer; transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1), background-color 160ms ease; border: 2px solid #141414; background: #fbfaf5; color: #141414; } .ds-btn:hover { background: #f1eee4; } .ds-btn:focus-visible { outline: 3px solid #1f3fbf; outline-offset: 3px; } .ds-btn:active { transform: scale(0.96) rotate(-0.6deg); }"
+    },
+    {
+      "name": "Pay Button",
+      "kind": "button",
+      "refersTo": "button-pay",
+      "description": "Add to parcel and Place order only.",
+      "html": "<button class=\"ds-btn-pay\"><svg viewBox=\"0 0 24 24\" width=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"square\" aria-hidden=\"true\"><path d=\"M3.5 7.5 12 3.5l8.5 4v9L12 20.5l-8.5-4Z\"/><path d=\"M3.5 7.5 12 11.5l8.5-4\"/><path d=\"M12 11.5v9\"/><path d=\"M7.8 5.5l8.4 4\"/></svg>Add to parcel</button>",
+      "css": ".ds-btn-pay { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 54px; padding: 0 32px; font-family: 'Sofia Sans Extra Condensed', 'Arial Narrow', sans-serif; font-weight: 800; font-size: 1.3125rem; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 0; cursor: pointer; transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1), background-color 160ms ease; border: 2px solid #c9380d; background: #c9380d; color: #ffffff; } .ds-btn-pay:hover { background: #a82e08; border-color: #a82e08; } .ds-btn-pay:focus-visible { outline: 3px solid #a82e08; outline-offset: 3px; } .ds-btn-pay:active { transform: scale(0.96) rotate(-0.6deg); }"
+    },
+    {
+      "name": "COD Amount Box",
+      "kind": "custom",
+      "refersTo": "cod-box",
+      "description": "The printed price box on every piece and order.",
+      "html": "<span class=\"ds-cod\"><span class=\"ds-cod-label\">COD amount</span><span class=\"ds-cod-amount\"><s>Rs 4,990</s>Rs 3,990</span></span>",
+      "css": ".ds-cod { display: inline-grid; gap: 2px; padding: 4px 12px 8px; border: 2px solid #c9380d; color: #c9380d; } .ds-cod-label { font-family: 'Sofia Sans Extra Condensed', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 0.8125rem; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.1; } .ds-cod-amount { font-family: 'IBM Plex Mono', Consolas, monospace; font-weight: 600; font-variant-numeric: tabular-nums; font-size: 1.3125rem; line-height: 1.1; } .ds-cod s { color: #4a4a4a; font-weight: 500; font-size: 0.8em; margin-right: 0.4em; }"
+    },
+    {
+      "name": "Slip Field",
+      "kind": "input",
+      "refersTo": "field-input",
+      "description": "A blank line on the slip with a printed label.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Mobile number</span><input type=\"tel\" placeholder=\"03XX XXXXXXX\" /><span class=\"ds-field-hint\">The rider calls this number before delivery.</span></label>",
+      "css": ".ds-field { display: grid; gap: 4px; font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif; } .ds-field-label { font-family: 'Sofia Sans Extra Condensed', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 0.9375rem; letter-spacing: 0.08em; text-transform: uppercase; color: #1f3fbf; } .ds-field input { min-height: 50px; padding: 8px 12px; border: 1.5px solid #b8c2ea; border-bottom: 2px solid #1f3fbf; border-radius: 0; background: #ffffff; color: #141414; font: inherit; font-size: 1.0625rem; } .ds-field input::placeholder { color: #767676; } .ds-field input:focus-visible { border-color: #1f3fbf; outline: 3px solid #1f3fbf; outline-offset: 0; } .ds-field-hint { font-size: 0.9375rem; color: #4a4a4a; }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Header nav with the boxed parcel link and its orange count.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\" aria-current=\"page\">Lawn</a><a href=\"#\">Ready to wear</a><a href=\"#\">Formals</a><a href=\"#\">Track order</a><a class=\"ds-parcel\" href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"square\" aria-hidden=\"true\"><path d=\"M3.5 7.5 12 3.5l8.5 4v9L12 20.5l-8.5-4Z\"/><path d=\"M3.5 7.5 12 11.5l8.5-4\"/><path d=\"M12 11.5v9\"/><path d=\"M7.8 5.5l8.4 4\"/></svg>Parcel <span class=\"ds-count\">2</span></a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 4px; padding-bottom: 12px; border-bottom: 4px double #1f3fbf; } .ds-nav a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; color: #141414; font-family: 'Sofia Sans Extra Condensed', 'Arial Narrow', sans-serif; font-weight: 800; font-size: 1.3125rem; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; } .ds-nav a:hover, .ds-nav a[aria-current] { text-decoration: underline; text-decoration-color: #1f3fbf; text-decoration-thickness: 3px; text-underline-offset: 0.25em; } .ds-nav a:focus-visible { outline: 3px solid #1f3fbf; outline-offset: 3px; } .ds-parcel { margin-left: auto; border: 2px solid #141414; } .ds-parcel:hover { text-decoration: none !important; } .ds-count { display: grid; place-items: center; min-width: 26px; height: 26px; padding: 0 6px; border: 1.5px solid #c9380d; background: #c9380d; color: #ffffff; font-family: 'IBM Plex Mono', Consolas, monospace; font-size: 0.8125rem; }"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Collection filter toggles.",
+      "html": "<button class=\"ds-chip\" aria-pressed=\"false\">In stock only</button><button class=\"ds-chip\" aria-pressed=\"true\">On sale</button>",
+      "css": ".ds-chip { min-height: 44px; padding: 0 16px; margin-right: 8px; border: 1.5px solid #1f3fbf; border-radius: 0; background: transparent; color: #1f3fbf; font-family: 'Sofia Sans Extra Condensed', 'Arial Narrow', sans-serif; font-weight: 800; font-size: 1.0625rem; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; } .ds-chip[aria-pressed='true'] { background: #1f3fbf; color: #ffffff; } .ds-chip:focus-visible { outline: 3px solid #1f3fbf; outline-offset: 3px; }"
+    },
+    {
+      "name": "Consignment Label",
+      "kind": "card",
+      "refersTo": "consignment-label",
+      "description": "The label stuck on each piece, with the ADDED stamp over its barcode.",
+      "html": "<div class=\"ds-label\"><p class=\"ds-label-head\"><span>Cash on delivery</span><span>MB/25-01</span></p><dl class=\"ds-label-fields\"><div><dt>Article</dt><dd class=\"ds-mono\">ML-25-01</dd></div><div><dt>Contents</dt><dd>3-piece unstitched</dd></div><div><dt>COD amount</dt><dd class=\"ds-mono ds-pay\">Rs 6,490</dd></div><div><dt>Delivery</dt><dd class=\"ds-mono\">LHE 1 to 2 days</dd></div></dl><div class=\"ds-bars\"></div><span class=\"ds-added\">Added</span></div>",
+      "css": ".ds-label { position: relative; display: grid; gap: 12px; width: 300px; margin: 24px; padding: 0 16px 16px; background: #ffffff; border: 1.5px solid #1f3fbf; box-shadow: 0 1px 2px rgb(20 20 20 / 0.1), 0 16px 30px -18px rgb(20 20 20 / 0.45); transform: rotate(-2deg); color: #141414; font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif; } .ds-label-head { display: flex; justify-content: space-between; margin: 0 -16px; padding: 4px 16px; background: #1f3fbf; color: #ffffff; font-family: 'Sofia Sans Extra Condensed', 'Arial Narrow', sans-serif; font-weight: 800; font-size: 0.9375rem; letter-spacing: 0.1em; text-transform: uppercase; } .ds-label-fields { display: grid; grid-template-columns: 1fr 1fr; margin: 0; border-top: 1px solid #b8c2ea; } .ds-label-fields div { padding: 8px 8px 8px 0; border-bottom: 1px solid #b8c2ea; } .ds-label-fields dt { font-family: 'Sofia Sans Extra Condensed', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 0.9375rem; letter-spacing: 0.08em; text-transform: uppercase; color: #1f3fbf; } .ds-label-fields dd { margin: 2px 0 0; font-size: 0.9375rem; } .ds-mono { font-family: 'IBM Plex Mono', Consolas, monospace; font-variant-numeric: tabular-nums; } .ds-pay { color: #c9380d; font-weight: 600; } .ds-bars { height: 30px; background: repeating-linear-gradient(90deg, #141414 0 2px, transparent 2px 4px, #141414 4px 5px, transparent 5px 8px); } .ds-added { position: absolute; right: 7%; bottom: 9%; padding: 2px 10px 0; border: 2.5px solid currentColor; border-radius: 4px; background: rgb(255 255 255 / 0.9); color: #c9380d; font-family: 'Sofia Sans Extra Condensed', 'Arial Narrow', sans-serif; font-weight: 900; font-size: 2rem; letter-spacing: 0.1em; text-transform: uppercase; transform: rotate(-14deg); opacity: 0.9; }"
+    },
+    {
+      "name": "Stamp Marks",
+      "kind": "chip",
+      "refersTo": "stamp",
+      "description": "Rubber stamps: blue for New and Sale, ink for Sold out, orange for parcel events.",
+      "html": "<span class=\"ds-stamp\">New</span> <span class=\"ds-stamp ds-stamp-ink\">Sold out</span> <span class=\"ds-stamp ds-stamp-event\">Booked</span>",
+      "css": ".ds-stamp { display: inline-block; margin: 12px; padding: 2px 10px 0; border: 2.5px solid currentColor; border-radius: 4px; color: #1f3fbf; font-family: 'Sofia Sans Extra Condensed', 'Arial Narrow', sans-serif; font-weight: 900; font-size: 1.3125rem; letter-spacing: 0.1em; line-height: 1.25; text-transform: uppercase; transform: rotate(-8deg); mix-blend-mode: multiply; opacity: 0.9; } .ds-stamp-ink { color: #141414; } .ds-stamp-event { color: #c9380d; transform: rotate(-12deg); }"
+    },
+    {
+      "name": "Carbon Copies",
+      "kind": "card",
+      "refersTo": "carbon-yellow-panel",
+      "description": "Yellow for what you pay, pink for what happened.",
+      "html": "<div class=\"ds-copy ds-yellow\"><strong>Consignment summary</strong><p>Pieces 2, delivery free</p></div><ol class=\"ds-copy ds-pink\"><li><span>Tue 11:30</span>Packed at MM Alam Road, Lahore</li><li><span>Wed 14:20</span>Delivered, Rs 6,490 paid to rider</li></ol>",
+      "css": ".ds-copy { display: grid; gap: 8px; margin: 0 0 16px; padding: 24px; border: 1.5px solid #1f3fbf; color: #141414; list-style: none; } .ds-copy p { margin: 0; } .ds-yellow { background: #f7efcc; box-shadow: 0 1px 2px rgb(20 20 20 / 0.1), 0 16px 30px -18px rgb(20 20 20 / 0.45); font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif; } .ds-yellow strong { font-family: 'Sofia Sans Extra Condensed', 'Arial Narrow', sans-serif; font-weight: 850; font-size: 1.6rem; } .ds-pink { background: #f8e6e4; font-family: 'IBM Plex Mono', Consolas, monospace; font-size: 0.9375rem; } .ds-pink li { display: grid; grid-template-columns: 7.5rem 1fr; gap: 12px; padding-block: 8px; border-bottom: 1px dashed rgb(31 63 191 / 0.35); } .ds-pink li:last-child { border-bottom: 0; font-weight: 600; } .ds-pink span { color: #1f3fbf; }"
+    },
+    {
+      "name": "Kraft Tape",
+      "kind": "custom",
+      "refersTo": "tape-band",
+      "description": "A tilted parcel tape band sealing one part of a page from the next.",
+      "html": "<div class=\"ds-tape\"><p>Mahnoor Boutique · Cash on delivery · All over Pakistan · Mahnoor Boutique · Cash on delivery · All over Pakistan ·</p></div>",
+      "css": ".ds-tape { overflow: hidden; padding: 16px 0; } .ds-tape p { width: 110%; margin: 0 0 0 -5%; padding: 12px 0; background: #c9a77c; color: rgb(20 20 20 / 0.72); font-family: 'Sofia Sans Extra Condensed', 'Arial Narrow', sans-serif; font-weight: 800; font-size: 1.0625rem; letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; transform: rotate(-1.2deg); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Cash on Delivery Slip",
+    "overview": "The store is the parcel on its way to the customer. Every surface is a courier form: slip paper printed in form blue for the labels, boxes and rules, filled in with ink for whatever the customer or the boutique wrote, and stamped with rubber stamp marks when something happens. Each piece wears a consignment label with its article code, what is in the box, the cash on delivery amount and delivery days by city, so ordering reads as certain as signing for a parcel at the door.\n\nDensity is that of a well kept form: ruled boxes, tabular figures, generous space around big honest photos. Photos stay large and true in colour; the form sits beside and on top of them, never over the clothes. Motion is physical and short: buttons press like a rubber stamp, stamps land with a thud, tracking lines print left to right like a courier printer. The world refuses the white fashion grid with a campaign banner and the \"DM for price\" habit; prices are always printed.",
+    "keyCharacteristics": [
+      "Slip paper ground, form blue print, ink fill, courier orange for money.",
+      "Square corners everywhere except rubber stamps.",
+      "Printed form labels in condensed uppercase above every filled in value.",
+      "Codes, prices, quantities and tracking lines in monospaced tabular figures.",
+      "Barcodes drawn from each article code; the boutique name stamped in Nastaliq.",
+      "Kraft parcel tape bands seal one part of a page from the next."
+    ],
+    "rules": [
+      {
+        "name": "The Pay Orange Rule",
+        "body": "Courier orange marks money and the parcel's journey, never navigation or general actions. Exactly two buttons are orange: Add to parcel and Place order. Every other button is the plain ink bordered slip button.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Carbons Rule",
+        "body": "Carbon pink and carbon yellow are the only panel tints. Yellow carries what you will pay; pink carries what happened or what the demo skipped. Every other panel is label white or bare slip paper with a form blue rule.",
+        "section": "colors"
+      },
+      {
+        "name": "The Filled In Rule",
+        "body": "Anything a person or system would write onto the slip (codes, prices, dates, counts, tracking lines) is monospaced with tabular figures. Printed words are condensed sans. Never swap them.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ranked Drop Rule",
+        "body": "When listing a drop, the newest piece is biggest: headline, then headline small, then title.",
+        "section": "typography"
+      },
+      {
+        "name": "The Stuck Paper Rule",
+        "body": "A shadow means a separate sheet. Buttons, chips, cards and fields never cast shadows. No hard offset shadows.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do put the price in a courier orange COD box with monospaced tabular figures wherever a piece or an order shows its price.",
+      "Do put a printed form blue uppercase label above every filled in value.",
+      "Do keep photos big, 2:3 on cards, and never cover the clothes with the label or a stamp.",
+      "Do label everything as a demo: the demo strip on every page, demo notes at checkout and on the note, example reviews marked as written for the demo, credits for every photo.",
+      "Do honour reduced motion: stamps, ticks, presses and printing collapse to instant.",
+      "Do keep pages out of search with noindex, nofollow."
+    ],
+    "donts": [
+      "Don't use courier orange on any button other than Add to parcel and Place order, or for links, nav, or decoration.",
+      "Don't tint a panel any colour other than carbon pink or carbon yellow.",
+      "Don't round corners on anything that is not a rubber stamp.",
+      "Don't add card number, wallet, PIN or CNIC fields; payment steps are a plain written demo note.",
+      "Don't print a real phone number; example numbers read 03XX XXXXXXX.",
+      "Don't cast shadows from buttons, chips, fields or cards; only stuck on paper lifts.",
+      "Don't put tape inside the checkout form."
+    ]
+  }
+}

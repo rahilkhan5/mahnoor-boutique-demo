@@ -1,0 +1,19 @@
+Product photos, all from Unsplash under the Unsplash License (free to use).
+Saved as WebP at 600 and 1200 px wide. Used only as demo content; the product names, codes and prices are ours.
+
+red-zari-formal: Shireen Lakdawala, https://unsplash.com/photos/rJirD6eI26I (source https://images.unsplash.com/photo-1733470381571-c3d082e68457)
+lilac-chiffon-formal: Muneeb Malhotra, https://unsplash.com/photos/zWaiJcc0WAc (source https://images.unsplash.com/photo-1705920824583-0e783235394d)
+black-velvet-formal: Muneeb Malhotra, https://unsplash.com/photos/Sf-ljYw9WUs (source https://images.unsplash.com/photo-1704119142483-1269733bcedb)
+ice-blue-formal: Shireen Lakdawala, https://unsplash.com/photos/emXLNzgf3p4 (source https://images.unsplash.com/photo-1733470381436-bb5a2a441708)
+black-net-formal: Shireen Lakdawala, https://unsplash.com/photos/aBdtyKmjs7c (source https://images.unsplash.com/photo-1733470381591-c5dfb9df3c3d)
+butter-lawn: Shireen Lakdawala, https://unsplash.com/photos/hbzeoDjfDAw (source https://images.unsplash.com/photo-1733470324488-d0e10d014d80)
+mint-lawn: Shireen Lakdawala, https://unsplash.com/photos/OeYXZyM63cQ (source https://images.unsplash.com/photo-1733209589578-97136bee7d7a)
+mustard-lawn: Muneeb Malhotra, https://unsplash.com/photos/TP9IdIX6QR8 (source https://images.unsplash.com/photo-1701252072712-e939599623f2)
+gold-lawn: Shireen Lakdawala, https://unsplash.com/photos/gXM7pt3zu1k (source https://images.unsplash.com/photo-1733209589780-ece842d0dcf8)
+cream-lawn: Shireen Lakdawala, https://unsplash.com/photos/E4Q1-2Bej0c (source https://images.unsplash.com/photo-1733209587923-77ff33202f7c)
+peach-pret: Shireen Lakdawala, https://unsplash.com/photos/QXRL6XkxYNk (source https://images.unsplash.com/photo-1733209484732-6b094322a89f)
+pearl-pret: Shireen Lakdawala, https://unsplash.com/photos/VshbFm-cBeo (source https://images.unsplash.com/photo-1733209590486-4ed0bfcbc52a)
+ikat-print-set: IMANA, https://unsplash.com/photos/a5Ow9rAf3ZI (source https://images.unsplash.com/photo-1765529374927-052599af9c82)
+navy-floral-set: IMANA, https://unsplash.com/photos/1qsb5rGOcC4 (source https://images.unsplash.com/photo-1766994063823-ed214f883548)
+pink-print-set: IMANA, https://unsplash.com/photos/6f3Lw_gZczU (source https://images.unsplash.com/photo-1768033976288-9300f5d6f296)
+maroon-paisley-kurta: IMANA, https://unsplash.com/photos/FuGHcMhxM-g (source https://images.unsplash.com/photo-1763559046515-1b98e82bc6d4)

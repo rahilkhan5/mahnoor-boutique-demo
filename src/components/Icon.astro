@@ -1,0 +1,43 @@
+---
+// One icon set, drawn for this site: 24px grid, 1.75px strokes with square ends.
+interface Props {
+  name: 'parcel' | 'truck' | 'arrow' | 'arrow-left' | 'close' | 'plus' | 'minus' | 'check' | 'ruler' | 'chat' | 'cash' | 'phone' | 'card' | 'track' | 'star';
+  class?: string;
+  label?: string;
+}
+const { name, class: className, label } = Astro.props;
+
+const paths: Record<Props['name'], string[]> = {
+  parcel: ['M3.5 7.5 12 3.5l8.5 4v9L12 20.5l-8.5-4Z', 'M3.5 7.5 12 11.5l8.5-4', 'M12 11.5v9', 'M7.8 5.5l8.4 4'],
+  truck: ['M2.5 6.5h11v9h-11Z', 'M13.5 9.5h4l3 3v3h-7', 'M6.5 18.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Z', 'M17 18.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Z'],
+  arrow: ['M4 12h15', 'M13 6l6 6-6 6'],
+  'arrow-left': ['M20 12H5', 'M11 6l-6 6 6 6'],
+  close: ['M6 6l12 12', 'M18 6 6 18'],
+  plus: ['M12 5v14', 'M5 12h14'],
+  minus: ['M5 12h14'],
+  check: ['M4.5 12.5l4.5 4.5 10-10'],
+  ruler: ['M3 15.5 15.5 3l5.5 5.5L8.5 21Z', 'M7 11.5l2 2', 'M10 8.5l2 2', 'M13 5.5l2 2'],
+  chat: ['M4 5h16v11H9l-5 4Z', 'M8 9.5h8', 'M8 12.5h5'],
+  cash: ['M2.5 6.5h19v11h-19Z', 'M12 14.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z', 'M5.5 9.5v5', 'M18.5 9.5v5'],
+  phone: ['M7 2.5h10v19H7Z', 'M10.5 18.5h3'],
+  card: ['M2.5 5.5h19v13h-19Z', 'M2.5 9.5h19', 'M6 14.5h4'],
+  track: ['M5 21V4', 'M5 4.5h12l-2.5 4 2.5 4H5', 'M9 21h6'],
+  star: ['M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8Z'],
+};
+---
+
+<svg
+  class:list={['icon', className]}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.75"
+  stroke-linecap="square"
+  stroke-linejoin="miter"
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+>
+  {paths[name].map((d) => <path d={d} />)}
+</svg>

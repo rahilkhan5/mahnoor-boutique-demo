@@ -1,0 +1,15 @@
+---
+// A strip of kraft parcel tape across the page, sealing one part from the next.
+import { shop } from '../data/store.js';
+
+interface Props {
+  tilt?: number;
+}
+const { tilt = -1.2 } = Astro.props;
+---
+
+<div class="tape" aria-hidden="true">
+  <p class="tape-band" style={`transform: rotate(${tilt}deg)`}>
+    {Array.from({ length: 6 }).map(() => <span>{shop.name} · Cash on delivery · All over Pakistan ·</span>)}
+  </p>
+</div>

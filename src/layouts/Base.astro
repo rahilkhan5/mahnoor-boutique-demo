@@ -1,0 +1,387 @@
+---
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import Tape from '../components/Tape.astro';
+import { shop, products, photoCredits } from '../data/store.js';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  current?: 'lawn' | 'pret' | 'formal' | 'track' | 'parcel';
+}
+const { title, description, image = '/photos/butter-lawn-1200.webp', current } = Astro.props;
+const ogImage = new URL(image, Astro.site).href;
+const names = Object.fromEntries(products.map((p) => [p.slug, p.name]));
+const nav = [
+  { key: 'lawn', href: '/#lawn', label: 'Lawn' },
+  { key: 'pret', href: '/#pret', label: 'Ready to wear' },
+  { key: 'formal', href: '/#formal', label: 'Formals' },
+  { key: 'track', href: '/track/', label: 'Track order' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#fbfaf5" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/sofia-sans-extra-condensed-500-900.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/ibm-plex-sans-var.woff2" as="font" type="font/woff2" crossorigin />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <aside class="demo-strip" aria-label="Demo notice">
+      <p><strong>Demo store.</strong> <span class="strip-long">{shop.name}, the clothes, prices and reviews are made up. Nothing is charged and nothing is sent. Photos are from Unsplash, credited at the bottom.</span><span class="strip-short">Made up, nothing is charged.</span></p>
+    </aside>
+
+    <header class="site-header">
+      <div class="page header-row">
+        <a class="brand" href="/" aria-label={`${shop.name}, home`}>
+          <span class="brand-stamp" aria-hidden="true">
+            <span class="urdu" lang="ur">ماہنور</span>
+            <span class="brand-sub">Boutique · Lahore</span>
+          </span>
+          <span class="brand-name">{shop.name}</span>
+        </a>
+        <nav class="nav" aria-label="Main">
+          {
+            nav.map((n) => (
+              <a href={n.href} aria-current={current === n.key ? 'page' : undefined}>
+                {n.label}
+              </a>
+            ))
+          }
+        </nav>
+        <a class="parcel-link" href="/parcel/" aria-current={current === 'parcel' ? 'page' : undefined}>
+          <Icon name="parcel" />
+          <span>Parcel</span>
+          <span class="parcel-count data" data-parcel-count aria-label="pieces in your parcel">0</span>
+        </a>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <Tape />
+
+    <footer class="site-footer">
+      <div class="page footer-grid">
+        <div class="sender">
+          <span class="field-label">Sender</span>
+          <p class="sender-name">{shop.name}</p>
+          <p>{shop.sender.replace(`${shop.name}, `, '')}</p>
+          <p class="sender-demo">A demo store. The shop, the address and every piece are made up for the demo.</p>
+        </div>
+        <div>
+          <span class="field-label">Photos</span>
+          <ul class="credits">
+            {
+              Object.entries(photoCredits).map(([slug, c]: [string, any]) => (
+                <li>
+                  {names[slug]} by <a href={c.url} rel="noopener">{c.by}</a>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="credits-note">All from Unsplash, free under the Unsplash License.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      import { parcelCount } from '../lib/store.js';
+      // Keep the header's parcel count in step with the cart on this device.
+      // When it goes up, the number stamps in.
+      let last = parcelCount();
+      function paint() {
+        const n = parcelCount();
+        document.querySelectorAll<HTMLElement>('[data-parcel-count]').forEach((el) => {
+          el.textContent = String(n);
+          el.classList.toggle('has-items', n > 0);
+          if (n > last) {
+            el.classList.remove('tick');
+            void el.offsetWidth;
+            el.classList.add('tick');
+          }
+        });
+        last = n;
+      }
+      document.querySelectorAll<HTMLElement>('[data-parcel-count]').forEach((el) =>
+        el.addEventListener('animationend', () => el.classList.remove('tick')),
+      );
+      paint();
+      window.addEventListener('mb:parcel', paint);
+      window.addEventListener('storage', paint);
+    </script>
+
+    <style>
+      .skip {
+        position: absolute;
+        left: var(--space-4);
+        top: -100px;
+        z-index: 20;
+        padding: var(--space-3) var(--space-4);
+        background: var(--ink);
+        color: var(--white);
+        font-weight: 600;
+      }
+
+      .skip:focus {
+        top: var(--space-4);
+      }
+
+      .demo-strip {
+        padding: var(--space-2) var(--space-4);
+        background: var(--ink);
+        color: var(--white);
+        font-size: var(--step--2);
+        line-height: 1.45;
+        text-align: center;
+      }
+
+      .strip-short {
+        display: none;
+      }
+
+      .site-header {
+        border-bottom: 4px double var(--form);
+      }
+
+      .header-row {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: var(--space-5);
+        padding-block: var(--space-3);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-3);
+        text-decoration: none;
+      }
+
+      .brand-stamp {
+        display: grid;
+        justify-items: center;
+        padding: 0 var(--space-3) var(--space-1);
+        border: 2.5px solid var(--form);
+        border-radius: 6px;
+        color: var(--form);
+        transform: rotate(-4deg);
+      }
+
+      .brand-stamp .urdu {
+        font-size: 1.5rem;
+        line-height: 1.55;
+      }
+
+      .brand-sub {
+        margin-top: -6px;
+        font-family: var(--font-form);
+        font-weight: 800;
+        font-size: 0.6875rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .brand-name {
+        font-family: var(--font-form);
+        font-weight: 850;
+        font-size: var(--step-2);
+        line-height: 1;
+      }
+
+      .nav {
+        display: flex;
+        justify-content: center;
+        gap: var(--space-1);
+      }
+
+      .nav a,
+      .parcel-link {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        min-height: 44px;
+        padding: 0 var(--space-3);
+        font-family: var(--font-form);
+        font-weight: 800;
+        font-size: var(--step-1);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        text-decoration: none;
+      }
+
+      .nav a:hover,
+      .nav a[aria-current] {
+        text-decoration: underline;
+        text-decoration-color: var(--form);
+        text-decoration-thickness: 3px;
+        text-underline-offset: 0.25em;
+      }
+
+      .parcel-link {
+        border: 2px solid var(--ink);
+        transition: transform 120ms var(--ease-out);
+      }
+
+      .parcel-link:active {
+        transform: scale(0.96);
+      }
+
+      .parcel-link :global(.icon) {
+        width: 24px;
+      }
+
+      .parcel-count {
+        display: grid;
+        place-items: center;
+        min-width: 26px;
+        height: 26px;
+        padding: 0 6px;
+        border: 1.5px solid var(--ink);
+        font-size: var(--step--2);
+      }
+
+      .parcel-link :global(.has-items) {
+        border-color: var(--pay);
+        background: var(--pay);
+        color: var(--white);
+      }
+
+      .parcel-link :global(.tick) {
+        animation: count-tick 340ms var(--ease-out);
+      }
+
+      @keyframes count-tick {
+        from {
+          transform: scale(1.45) rotate(-10deg);
+        }
+        to {
+          transform: none;
+        }
+      }
+
+      .site-footer {
+        padding-block: var(--space-6) var(--space-8);
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+        gap: var(--space-7);
+        padding-top: var(--space-6);
+        border-top: var(--rule);
+      }
+
+      .sender {
+        display: grid;
+        gap: var(--space-2);
+        align-content: start;
+      }
+
+      .sender-name {
+        font-family: var(--font-form);
+        font-weight: 850;
+        font-size: var(--step-2);
+        line-height: 1;
+      }
+
+      .sender-demo,
+      .credits-note {
+        font-size: var(--step--1);
+        color: var(--ink-soft);
+      }
+
+      .credits {
+        columns: 2;
+        column-gap: var(--space-6);
+        margin: var(--space-2) 0 0;
+        padding: 0;
+        list-style: none;
+        font-size: var(--step--1);
+        line-height: 1.8;
+      }
+
+      .credits li {
+        break-inside: avoid;
+      }
+
+      .credits-note {
+        margin-top: var(--space-3);
+      }
+
+      @media (max-width: 960px) {
+        .header-row {
+          grid-template-columns: auto auto;
+          justify-content: space-between;
+          row-gap: var(--space-2);
+        }
+
+        .nav {
+          grid-column: 1 / -1;
+          order: 3;
+          justify-content: flex-start;
+          margin-inline: calc(var(--space-3) * -1);
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+
+        .nav a {
+          flex: none;
+          font-size: var(--step-0);
+        }
+
+        .footer-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .strip-long {
+          display: none;
+        }
+
+        .strip-short {
+          display: inline;
+        }
+
+        .header-row {
+          padding-block: var(--space-2) 0;
+        }
+
+        .brand-stamp .urdu {
+          font-size: 1.25rem;
+          line-height: 1.45;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .brand-name {
+          display: none;
+        }
+
+        .parcel-link {
+          padding: 0 var(--space-2);
+        }
+
+        .credits {
+          columns: 1;
+        }
+      }
+    </style>
+  </body>
+</html>
